@@ -1,6 +1,84 @@
 package rx.browser.ui;
 
 class Mount {
+
+  public static var totalInstantiationTime: Int = 0;
+  public static var totalInjectionTime: Int = 0;
+
+  public static function scrollMonitor(container: js.html.Element, renderCallback: Dynamic) {
+    renderCallback();
+  }
+
+  public static function getReactRootId(container: js.html.Element):String {
+    var rootElement = getReactRootElementInContainer(container);
+    if (rootElement != null) return getId(rootElement);
+    return null;
+  }
+
+  public static function getInstanceByContainer(container: js.html.Element):rx.core.Component {
+    var id:String = getReactRootId(container);
+    return instancesByReactRootId.get(id);
+  }
+
+  public static function shouldUpdateReactComponent(prev: rx.core.Component, next: rx.core.Component):Bool {
+    if (
+      (prev != null && next != null) && 
+      (Type.getClass(prev) == Type.getClass(next)) &&
+      (prev.descriptor.props.get('key') == next.descriptor.props.get('key')) &&
+      (prev.owner == next.owner)) {
+      return true;
+    }
+    return false;
+  }
+
+  public static function updateRootComponent(prev: rx.core.Component, next: rx.core.Component, container: js.html.Element, callback:Dynamic):rx.core.Component {
+    var nextProps = next.props;
+    scrollMonitor(container, function () {
+      prev.replaceProps(nextProps, callback);
+    });
+    return prev;
+  }
+
+  public static function unmountComponentAtNode(container: js.html.Element) {
+
+  }
+
+  public static function registerContainer(container: js.html.Element) {
+    
+  }
+
+  public static function registerComponent(component: rx.core.Component, container:js.html.Element):String {
+    var reactRootId = registerContainer(container);
+    instancesByReactRootId.set(reactRootId, component);
+    return reactRootId; 
+  }
+
+  public static function renderNewRootComponent(component: rx.core.Component, container: js.html.Element, shouldReuseMarkup: Bool):rx.core.Component {
+    var reactRootId = registerComponent(component, container);
+    component.mountComponentIntoNode(reactRootId, container, shouldReuseMarkup);
+    return component;
+  }
+
+  public static var instancesByReactRootId = new Map<String, rx.core.Component>();
+  public static function renderComponent(component: rx.core.Component, container: js.html.Element, callback: Dynamic) {
+    var prevComponent = getInstanceByContainer(container);
+    if (prevComponent != null) {
+      var prevDescriptor = prevComponent.descriptor;
+      var nextDescriptor = component.descriptor;
+      if (shouldUpdateReactComponent(prevComponent, component)) {
+        return updateRootComponent(prevComponent, component, container, callback);
+      } else {
+        unmountComponentAtNode(container);
+      }
+    }
+
+    var reactRootElement = getReactRootElementInContainer(container);
+    var containerHasReactMarkup = (reactRootElement != null && isRenderedByReact(reactRootElement));
+    var shouldReuseMarkup = containerHasReactMarkup && (prevComponent == null);
+
+    var component = renderNewRootComponent(component, container, shouldReuseMarkup);
+  } 
+   
   /*
   static var instancesByReactRootId: Map<String, Component> = new Map<String,Component>();
 

@@ -10,7 +10,10 @@ class App {
       DOM.el('span', [])
     ]);
 
-    var code = component.mountComponent('test' , rx.browser.ReconcileTransaction.pool.getPooled() , 0 );
-    trace(code);
+    var d = js.Browser.document;
+    d.addEventListener('DOMContentLoaded', function (event: js.html.Event) {
+      var container = d.getElementById('app');
+      rx.browser.ui.Mount.renderComponent(component, container);
+    });
   }
 }

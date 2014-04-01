@@ -9,8 +9,8 @@ class Component {
   
   public var props: rx.core.Descriptor.Props;
   public var children: Array<rx.core.Component>;
-  var context: rx.core.Context;
-  var owner: rx.core.Owner;
+  public var context: rx.core.Context;
+  public var owner: rx.core.Owner;
   public var descriptor:Descriptor;
   var pendingDescriptor:Descriptor;
 
