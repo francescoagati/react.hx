@@ -1,6 +1,6 @@
-package rx.browser.ui;
+package rx.browser.ui.dom;
 
-class DOMComponent extends rx.core.ContainerComponent {
+class Component extends rx.core.ContainerComponent {
   var tagOpen: String;
   var tagClose: String;
   var omitClose: Bool;
@@ -40,7 +40,7 @@ class DOMComponent extends rx.core.ContainerComponent {
           //   }
           //   propValue = CSSPropertyOperations.createMarkupForStyles(propValue);
           // }
-          var markup = DOMPropertyOperations.createMarkupForProperty(propKey, propValue);
+          var markup = PropertyOperations.createMarkupForProperty(propKey, propValue);
           if (markup) {
             ret += ' ' + markup;
           }
@@ -52,7 +52,7 @@ class DOMComponent extends rx.core.ContainerComponent {
       return ret + '>';
     }
 
-    var markupForId = DOMPropertyOperations.createMarkupForId(rootNodeId);
+    var markupForId = PropertyOperations.createMarkupForId(rootNodeId);
     return ret + ' ' + markupForId + '>';
   }
 
@@ -72,7 +72,7 @@ class DOMComponent extends rx.core.ContainerComponent {
         // CONTENT_TYPES[typeof this.props.children] ? this.props.children : null;
       var childrenToUse = (contentToUse != null) ? null : this.children;
       if (contentToUse != null) {
-        return DOMPropertyOperations.escapeTextForBrowser(contentToUse);
+        return PropertyOperations.escapeTextForBrowser(contentToUse);
       } else if (childrenToUse != null && childrenToUse.length > 0) {
         var mountImages = this.mountChildren(
           childrenToUse,

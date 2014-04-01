@@ -12,7 +12,7 @@ class Descriptor {
   public var children: Array<rx.core.Component>;
   public var props: Props;
 
-  public function new(children: Array<rx.core.Component>, props: Props) {
+  public function new(?children: Array<rx.core.Component> = null, ?props: Props = null) {
     this.children = children;
     this.props = props;
   }

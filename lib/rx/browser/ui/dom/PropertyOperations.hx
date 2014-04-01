@@ -1,6 +1,6 @@
-package rx.browser.ui;
+package rx.browser.ui.dom;
 
-class DOMPropertyOperations {
+class PropertyOperations {
 
   public static function escapeTextForBrowser(name:String):String {
     return name;
