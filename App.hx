@@ -22,6 +22,10 @@ class MyComponent extends rx.core.CompositeComponent<RootState> {
     
   }
 
+  public override function componentDidUpdate(props, state, context) {
+    trace('didUpdate');
+  }
+
   public override function render():rx.core.Component {
     return DOM.el('div', [for (i in 0...3) 
       DOM.el('div', [

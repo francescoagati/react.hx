@@ -7,6 +7,10 @@ enum Lifecycle {
 
 class Component extends rx.core.Owner {
   
+  public static function shouldUpdate(prevComponent, nextComponent):Bool {
+    return true;
+  }
+
   public var props: rx.core.Descriptor.Props;
   public var children: Array<rx.core.Component>;
   public var context: rx.core.Context;
@@ -89,6 +93,11 @@ class Component extends rx.core.Owner {
     rx.browser.ReconcileTransaction.pool.release(transaction);
   }
 
+  public function receiveComponent(nextComponent:rx.core.Component, transaction:rx.browser.ReconcileTransaction) {
+    trace('receive');
+    _performUpdateIfNecessary(transaction);
+  }
+
   public function _performUpdateIfNecessary(transaction) {
     // if (this._pendingProps == null) {
     //   return;
@@ -107,7 +116,12 @@ class Component extends rx.core.Owner {
     rx.browser.ReconcileTransaction.pool.release(transaction);
   }
 
-  public function updateComponent(transaction, prevProps, prevOwner) {
+  public function updateComponent(
+    transaction:rx.browser.ReconcileTransaction, 
+    prevProps:rx.core.Descriptor.Props, 
+    prevOwner: rx.core.Owner, 
+    ?prevState: Dynamic, 
+    ?prevContext: Dynamic) {
       var props = this.props;
       // If either the owner or a `ref` has changed, make sure the newest owner
       // has stored a reference to `this`, and the previous owner (if different)

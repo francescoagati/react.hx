@@ -16,7 +16,7 @@ class CompositeComponent<T> extends rx.core.Component {
   private var pendingForceUpdate: Bool;
   private var defaultProps: rx.core.Descriptor.Props;
 
-  private var renderedComponent: Dynamic;
+  private var renderedComponent: rx.core.Component;
 
   public function new() {
     super(new rx.core.Descriptor(null, null));
@@ -42,6 +42,9 @@ class CompositeComponent<T> extends rx.core.Component {
 
   public function componentWillMount():Void {}
   public function componentDidMount():Void {}
+
+  public function componentWillUpdate(props, state, context):Void {}
+  public function componentDidUpdate(props, state, context):Void {}
 
   public function render():rx.core.Component { return null; }
 
@@ -92,8 +95,114 @@ class CompositeComponent<T> extends rx.core.Component {
     rx.core.Updates.enqueueUpdate(this, callback);
   }
 
+  public override function receiveComponent(nextComponent:rx.core.Component, transaction:rx.browser.ReconcileTransaction) {
+    if (nextComponent == this) {
+      // Since props and context are immutable after the component is
+      // mounted, we can do a cheap identity compare here to determine
+      // if this is a superfluous reconcile.
+      return;
+    }
+    trace('haha');
+    // _pendingContext = nextComponent._currentContext;
+    super.receiveComponent(
+      nextComponent,
+      transaction
+    );
+  }
+
+  public override function updateComponent(
+    transaction:rx.browser.ReconcileTransaction, 
+    prevProps:rx.core.Descriptor.Props, 
+    prevOwner: rx.core.Owner, 
+    ?prevState: Dynamic, 
+    ?prevContext: Dynamic) {
+
+    super.updateComponent(transaction, prevProps, prevOwner);
+
+    var prevComponent = renderedComponent;
+    var nextComponent = renderValidatedComponent();
+
+    if (rx.core.Component.shouldUpdate(prevComponent, nextComponent)) {
+      prevComponent.receiveComponent(nextComponent, transaction);
+    } else {
+
+    }
+
+  }
+
+  public function _performComponentUpdate(
+    nextProps: rx.core.Descriptor.Props,
+    nextOwner: rx.core.Owner,
+    nextState: T,
+    nextFullContext: rx.core.Context,
+    nextContext: rx.core.Context,
+    transaction: rx.browser.ReconcileTransaction) {
+
+    this.componentWillUpdate(nextProps, nextState, nextContext);
+
+    this.updateComponent(
+      transaction,
+      // prevProps,
+      // prevOwner,
+      // prevState,
+      // prevContext
+      props,
+      owner,
+      state,
+      context
+    );
+
+    transaction.getMountReady().enqueue(
+      this, function () {
+        componentDidUpdate(props, state, context);
+      }
+    );
+
+  }
+
   public override function _performUpdateIfNecessary(transaction: rx.browser.ReconcileTransaction) {
-    
+    // if (this._pendingProps == null &&
+    //     this._pendingState == null &&
+    //     this._pendingContext == null &&
+    //     !this._pendingForceUpdate) {
+    //   return;
+    // }
+
+    // var nextFullContext = this._pendingContext || this._currentContext;
+    // var nextContext = this._processContext(nextFullContext);
+    // this._pendingContext = null;
+
+    // var nextProps = this.props;
+    // if (this._pendingProps != null) {
+    //   nextProps = this._processProps(this._pendingProps);
+    //   this._pendingProps = null;
+
+    //   this._compositeLifeCycleState = CompositeLifeCycle.RECEIVING_PROPS;
+    //   if (this.componentWillReceiveProps) {
+    //     this.componentWillReceiveProps(nextProps, nextContext);
+    //   }
+    // }
+
+    compositeLifecycleState = CompositeLifecycle.ReceivingState;
+
+    // var nextOwner = this._pendingOwner;
+    // var nextState = this._pendingState || this.state;
+    // this._pendingState = null;
+
+    try {
+
+      this._performComponentUpdate(
+        props,
+        owner,
+        state,
+        context,
+        context,
+        transaction
+      );
+
+    } catch(e:Dynamic) {}
+
+    compositeLifecycleState = null;
   }
 
   public override function performUpdateIfNecessary() {
