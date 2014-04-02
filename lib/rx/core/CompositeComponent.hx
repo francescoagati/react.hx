@@ -87,5 +87,21 @@ class CompositeComponent<T> extends rx.core.Component {
     transaction.getMountReady().enqueue(this, componentDidMount);
     return markup;
   }
+
+  public function digest(?callback: Dynamic) {
+    rx.core.Updates.enqueueUpdate(this, callback);
+  }
+
+  public override function _performUpdateIfNecessary(transaction: rx.browser.ReconcileTransaction) {
+    
+  }
+
+  public override function performUpdateIfNecessary() {
+    var _state = compositeLifecycleState;
+    if (_state == CompositeLifecycle.Mounting || _state == CompositeLifecycle.ReceivingProps) {
+      return;
+    } 
+    return super.performUpdateIfNecessary();
+  }
   
 }

@@ -57,31 +57,7 @@ class Component extends rx.core.ContainerComponent {
   }
 
   public function createContentMarkup(transaction: rx.browser.ReconcileTransaction) {
-    var innerHTML = null;
-    if (this.props != null) {
-      var innerHTML = this.props.get('dangerouslySetInnerHTML');
-      if (innerHTML != null) {
-        if (innerHTML.__html != null) {
-          return innerHTML.__html;  
-        }
-      }
-    }
-    
-    if (innerHTML == null) {
-
-      var contentToUse = null;
-        // CONTENT_TYPES[typeof this.props.children] ? this.props.children : null;
-      var childrenToUse = (contentToUse != null) ? null : this.children;
-      if (contentToUse != null) {
-        return PropertyOperations.escapeTextForBrowser(contentToUse);
-      } else if (childrenToUse != null && childrenToUse.length > 0) {
-        var mountImages = this.mountChildren(
-          childrenToUse,
-          transaction
-        );
-        return mountImages.join('');
-      }
-    }
-    return '';
+    var mountImages = this.mountChildren(this.children,transaction);
+    return mountImages.join('');
   }
 }

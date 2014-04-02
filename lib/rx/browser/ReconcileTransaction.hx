@@ -17,8 +17,12 @@ class ReconcileTransaction extends rx.utils.Transaction {
     };
 
     var onDomReadyQueueing = {
-      initialize: function () {},
-      close: function () {}
+      initialize: function () {
+        mountReady.reset();
+      },
+      close: function () {
+        mountReady.notifyAll();
+      }
     };
 
     var putListenerQueueing = {

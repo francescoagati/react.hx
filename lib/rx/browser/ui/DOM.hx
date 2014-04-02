@@ -1,6 +1,8 @@
 package rx.browser.ui;
 
 class DOM {
+
+  static var emptyDescriptor = new rx.core.Descriptor(null, null);
   public static var tagsMap: Map<String, Bool> = [
     'a' => false,
     'b' => false,
@@ -16,7 +18,6 @@ class DOM {
   }
 
   public static function text(text: String):rx.core.Component {
-    var descriptor = new rx.core.Descriptor();
-    return new rx.browser.ui.dom.components.Text(text, descriptor); 
+    return new rx.browser.ui.dom.components.Text(text, emptyDescriptor); 
   }
 }

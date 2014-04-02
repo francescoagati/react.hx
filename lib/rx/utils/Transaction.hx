@@ -34,7 +34,16 @@ class Transaction {
   }
 
   public function perform(method:Dynamic, scope:Dynamic, args: Array<Dynamic>):Dynamic {
-    return Reflect.callMethod(scope, method, args);
+    var ret = null;
+    _isInTransaction = true;
+    try {
+      initializeAll(0);
+      ret = Reflect.callMethod(scope, method, args);
+    } catch(e: Dynamic) {};
+
+    closeAll(0);
+    _isInTransaction = false;
+    return ret;
   }
 
   public function isInTransaction():Bool {
@@ -42,10 +51,18 @@ class Transaction {
   }
 
   public function initializeAll(startIndex: Int):Void {
-
+    var wrappers = getTransactionWrappers();
+    for (i in startIndex...wrappers.length) {
+      var wrapper = wrappers[i];
+      wrapper.initialize();
+    }
   }
 
   public function closeAll(startIndex: Int):Void {
-
+    var wrappers = getTransactionWrappers();
+    for (i in startIndex...wrappers.length) {
+      var wrapper = wrappers[i];
+      wrapper.close();
+    }
   }
 }

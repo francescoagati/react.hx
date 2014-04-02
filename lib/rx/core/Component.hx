@@ -89,7 +89,37 @@ class Component extends rx.core.Owner {
     rx.browser.ReconcileTransaction.pool.release(transaction);
   }
 
-  public function performUpdateIfNecessary() {
-
+  public function _performUpdateIfNecessary(transaction) {
+    // if (this._pendingProps == null) {
+    //   return;
+    // }
+    // var prevProps = this.props;
+    // var prevOwner = this._owner;
+    // this.props = this._pendingProps;
+    // this._owner = this._pendingOwner;
+    // this._pendingProps = null;
+    this.updateComponent(transaction, props, owner);
   }
+
+  public function performUpdateIfNecessary() {
+    var transaction = rx.browser.ReconcileTransaction.pool.getPooled();
+    transaction.perform(this._performUpdateIfNecessary, this, [transaction]);
+    rx.browser.ReconcileTransaction.pool.release(transaction);
+  }
+
+  public function updateComponent(transaction, prevProps, prevOwner) {
+      var props = this.props;
+      // If either the owner or a `ref` has changed, make sure the newest owner
+      // has stored a reference to `this`, and the previous owner (if different)
+      // has forgotten the reference to `this`.
+      if (this.owner != prevOwner || props.get('ref') != prevProps.get('ref')) {
+        if (prevProps.get('ref') != null) {
+          rx.core.Owner.removeComponentAsRefFrom(this, prevProps.get('ref'), prevOwner);
+        }
+        // Correct, even if the owner is the same, and only the ref has changed.
+        if (props.get('ref') != null) {
+          rx.core.Owner.addComponentAsRefTo(this, props.get('ref'), this.owner);
+        }
+      }
+    }
 }
