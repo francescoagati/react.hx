@@ -11,7 +11,6 @@ class PropertyOperations {
   }
 
   public static function createMarkupForId(id:String):String {
-    trace('id: $id');
     return processAttributeNameAndPrefix(rx.browser.ui.dom.Property.ID_ATTRIBUTE_NAME) + escapeTextForBrowser(id) + '"';
   }
 

@@ -5,28 +5,33 @@ class Utils {
   public static var SEPARATOR = '.';
   public static var SUBSEPARATOR = ':';
   public static function traverseAllChildrenImpl(children: Array<rx.core.Component>, nameSoFar:String, indexSoFar:Int, callback:Dynamic, traverseContext:Dynamic):Int {
-    trace(nameSoFar, indexSoFar);
-    if (children == null) {
-      return 1;
-    }
     var subtreeCount = 0;
-    for (i in 0...children.length) {
-      var child = children[i];
-      var nextName = nameSoFar;
-      if (nameSoFar == '') {
-        nextName += SUBSEPARATOR;
-      } else {
-        nextName += SEPARATOR;
+    if (children != null && children.length > 0) {
+      for (i in 0...children.length) {
+        var child = children[i];
+        var nextName = nameSoFar;
+        if (nameSoFar == '') {
+          nextName += SUBSEPARATOR;
+        } else {
+          nextName += SEPARATOR;
+        }
+        nextName += getComponentKey(child, i);
+        var nextIndex = indexSoFar + subtreeCount;
+
+        if (child.children != null && child.children.length > 0) {
+          subtreeCount += traverseAllChildrenImpl(
+            child.children,
+            nextName,
+            nextIndex,
+            callback,
+            traverseContext
+          );
+        } else {
+          var storageName = nameSoFar + SEPARATOR + getComponentKey(child, 0);
+          callback(traverseContext, child, storageName, indexSoFar);
+          // subtreeCount = 1;
+        }
       }
-      nextName += getComponentKey(child, i);
-      var nextIndex = indexSoFar + subtreeCount;
-      subtreeCount += traverseAllChildrenImpl(
-        child.children,
-        nextName,
-        nextIndex,
-        callback,
-        traverseContext
-      );
     }
     return subtreeCount;
   }
@@ -66,11 +71,11 @@ class Utils {
     }
   }
 
-  public static function flattenSingleChildIntoContext(traverseContext, child, name) {
+  public static function flattenSingleChildIntoContext(traverseContext, child:rx.core.Component, name:String) {
     // We found a component instance.
     var result = traverseContext;
     if (child != null) {
-      result[name] = child;
+      result.set(name, child);
     }
   }
 
