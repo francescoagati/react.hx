@@ -1,7 +1,5 @@
 package rx.core;
 
-typedef Props = Dynamic;
-
 enum CompositeLifecycle {
   Mounting;
   Unmounting;
@@ -9,20 +7,19 @@ enum CompositeLifecycle {
   ReceivingState;
 }
 
-class CompositeComponent extends rx.core.Component {
-/*
+class CompositeComponent<T> extends rx.core.Component {
+
   private var compositeLifecycleState: CompositeLifecycle;
 
-  private var state: T1;
-  private var pendingState: T1;
+  private var state: T;
+  private var pendingState: T;
   private var pendingForceUpdate: Bool;
-  private var context: Dynamic; // ?
-  private var defaultProps: T2;
+  private var defaultProps: rx.core.Descriptor.Props;
 
   private var renderedComponent: Dynamic;
 
-  public function new(?children: Array<Component>, ?props: T2) {
-    super();
+  public function new() {
+    super(new rx.core.Descriptor(null, null));
 
     state = null;
     pendingState = null;
@@ -35,35 +32,35 @@ class CompositeComponent extends rx.core.Component {
     return super.isMounted();
   }
 
-  public function getInitialState():T1 {
+  public function getInitialState():T {
     return null;
   }
 
-  public function getDefaultProps():T2 {
+  public function getDefaultProps():rx.core.Descriptor.Props {
     return null;
   }
 
   public function componentWillMount():Void {}
   public function componentDidMount():Void {}
 
-  public function render():rx.Component { return null; }
+  public function render():rx.core.Component { return null; }
 
-  private function renderValidatedComponent():rx.Component {
+  private function renderValidatedComponent():rx.core.Component {
 
     var renderedComponent = null;
     // var previousContext = Context.current;
     // Context.current = processChildContext(this.descriptor.context);
-    React.CurrentOwner = this;
+    rx.core.Owner.current = this;
     try {
       renderedComponent = this.render();
     } catch(e:Dynamic) {}
     // Context.current = prev;
-    React.CurrentOwner = null;
+    rx.core.Owner.current = null;
 
     return renderedComponent;
   }
 
-  public override function mountComponent(rootId: String, transaction: rx.ReconcileTransaction, ?mountDepth:Int = 0):String {
+  public override function mountComponent(rootId: String, transaction: rx.browser.ReconcileTransaction, mountDepth:Int):String {
 
     super.mountComponent(rootId, transaction, mountDepth);
     compositeLifecycleState = CompositeLifecycle.Mounting;
@@ -90,5 +87,5 @@ class CompositeComponent extends rx.core.Component {
     transaction.getMountReady().enqueue(this, componentDidMount);
     return markup;
   }
-  */
+  
 }

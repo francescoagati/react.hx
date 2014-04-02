@@ -31,7 +31,7 @@ class ReconcileTransaction extends rx.utils.Transaction {
   }
 
   public var renderToStaticMarkup: Bool;
-  var mountReady: rx.core.MountReady;
+  public var mountReady: rx.core.MountReady;
   var putListenerQueue: rx.browser.PutListenerQueue;
 
   public function new(_) {
@@ -39,6 +39,10 @@ class ReconcileTransaction extends rx.utils.Transaction {
     renderToStaticMarkup = false;
     mountReady = rx.core.MountReady.pool.getPooled();
     putListenerQueue = rx.browser.PutListenerQueue.pool.getPooled();
+  }
+
+  public function getMountReady():rx.core.MountReady {
+    return mountReady;
   }
 
 

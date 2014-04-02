@@ -5,7 +5,7 @@ enum Lifecycle {
   Unmounted;
 }
 
-class Component {
+class Component extends rx.core.Owner {
   
   public var props: rx.core.Descriptor.Props;
   public var children: Array<rx.core.Component>;
@@ -48,7 +48,7 @@ class Component {
   }
 
   public function new(descriptor: rx.core.Descriptor) {
-    
+    super();
     this.children = descriptor.children;
     this.props = descriptor.props;
     this.descriptor = descriptor;
