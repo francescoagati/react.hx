@@ -64,6 +64,14 @@ class Component {
   }
 
   public function mountComponent(rootId: String, transaction: rx.browser.ReconcileTransaction, mountDepth: Int):String {
+    var props = this.props;
+    if (props != null && props.get('ref') != null) {
+      var owner = this.owner;
+      Owner.addComponentAsRefTo(this, props.get('ref'), owner);
+    }
+    this.rootNodeId = rootId;
+    this.lifecycleState = Lifecycle.Mounted;
+    this.mountDepth = mountDepth;
     return null;
   }
 

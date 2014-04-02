@@ -68,6 +68,7 @@ class Component extends rx.core.ContainerComponent {
     }
     
     if (innerHTML == null) {
+
       var contentToUse = null;
         // CONTENT_TYPES[typeof this.props.children] ? this.props.children : null;
       var childrenToUse = (contentToUse != null) ? null : this.children;

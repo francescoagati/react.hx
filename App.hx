@@ -6,8 +6,8 @@ class App {
   public static function main():Void {
     
     var component = DOM.el('div', [
-      DOM.el('span', []),
-      DOM.el('span', [])
+      DOM.el('div', [DOM.text('Hello')]),
+      DOM.el('div', [DOM.text('World')])
     ]);
 
     var d = js.Browser.document;
