@@ -4,7 +4,7 @@ class ContainerComponent extends rx.core.Component {
   public static var updateDepth:Int = 0;
   var rendererChildren: Map<String, rx.core.Component>;
   public function mountChildren(nestedChildren:Array<rx.core.Component>, transaction:rx.browser.ReconcileTransaction) {
-    var children:Map<String, rx.core.Component> = rx.utils.Utils.flattenChildren(nestedChildren);
+    var children:Map<String, rx.core.Component> = rx.utils.FlattenChildren.flattenChildren(nestedChildren);
     var mountImages = [];
     var index = 0;
     rendererChildren = children;
