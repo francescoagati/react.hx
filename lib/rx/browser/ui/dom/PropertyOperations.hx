@@ -11,7 +11,7 @@ class PropertyOperations {
   }
 
   public static function createMarkupForId(id:String):String {
-    return processAttributeNameAndPrefix('data-react-id') + escapeTextForBrowser(id) + '"';
+    return processAttributeNameAndPrefix(rx.browser.ui.dom.Property.ID_ATTRIBUTE_NAME) + escapeTextForBrowser(id) + '"';
   }
 
   public static function createMarkupForProperty(name: String, value:String) {

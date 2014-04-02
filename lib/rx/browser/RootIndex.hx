@@ -1,8 +1,8 @@
-package rx.browser.ui;
+package rx.browser;
 
 class RootIndex {
   private static var _rootIndex: Int = 0;
-  public static function rootIndex():Int {
+  public static function createReactRootIndex():Int {
     return _rootIndex++;
   }
 }

@@ -9,6 +9,32 @@ class Mount {
     renderCallback();
   }
 
+  public static inline var DOC_NODE_TYPE:Int = 9;
+  public static function getReactRootElementInContainer(container: js.html.Element): js.html.Node {
+    if (container == null) {
+      return null;
+    }
+    if (container.nodeType == DOC_NODE_TYPE) {
+      return js.Browser.document.documentElement;
+    } else {
+      return container.firstChild;
+    }
+  }
+
+  public static function internalGetId(node: js.html.Node):String {
+    var id = '';
+    if (Reflect.hasField(node, 'getAttribute') != null) {
+      id = Reflect.callMethod(node, Reflect.getProperty(node, 'getAttribute'), [rx.browser.ui.dom.Property.ID_ATTRIBUTE_NAME]);
+    }
+    return id;
+  }
+
+  public static function getId(node: js.html.Node):String {
+    var id = internalGetId(node);
+    // TODO: node cache
+    return id;
+  }
+
   public static function getReactRootId(container: js.html.Element):String {
     var rootElement = getReactRootElementInContainer(container);
     if (rootElement != null) return getId(rootElement);
@@ -43,8 +69,19 @@ class Mount {
 
   }
 
-  public static function registerContainer(container: js.html.Element) {
-    
+  public static var containersByReactRootId = new Map<String, js.html.Element>();
+  public static function registerContainer(container: js.html.Element):String {
+    var reactRootId = getReactRootId(container);
+    if (reactRootId != null) {
+      // If one exists, make sure it is a valid "reactRoot" ID.
+      reactRootId = rx.core.InstanceHandles.getReactRootIdFromNodeId(reactRootId);
+    }
+    if (reactRootId == null) {
+      // No valid "reactRoot" ID found, create one.
+      reactRootId = rx.core.InstanceHandles.createReactRootId();
+    }
+    containersByReactRootId.set(reactRootId, container);
+    return reactRootId;
   }
 
   public static function registerComponent(component: rx.core.Component, container:js.html.Element):String {
@@ -59,8 +96,18 @@ class Mount {
     return component;
   }
 
+  public static inline var SEPARATOR:String = '.';
+  public static function isRenderedByReact(node: js.html.Node):Bool {
+    if (node.nodeType != 1) {
+      // Not a DOMElement, therefore not a React component
+      return false;
+    }
+    var id = getId(node);
+    return (id != null) ? id.charAt(0) == SEPARATOR : false;
+  }
+
   public static var instancesByReactRootId = new Map<String, rx.core.Component>();
-  public static function renderComponent(component: rx.core.Component, container: js.html.Element, callback: Dynamic) {
+  public static function renderComponent(component: rx.core.Component, container: js.html.Element, ?callback: Dynamic) {
     var prevComponent = getInstanceByContainer(container);
     if (prevComponent != null) {
       var prevDescriptor = prevComponent.descriptor;
@@ -77,6 +124,7 @@ class Mount {
     var shouldReuseMarkup = containerHasReactMarkup && (prevComponent == null);
 
     var component = renderNewRootComponent(component, container, shouldReuseMarkup);
+    return component;
   } 
    
   /*

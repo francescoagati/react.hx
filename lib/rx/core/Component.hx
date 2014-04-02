@@ -67,6 +67,20 @@ class Component {
     return null;
   }
 
+  public function _mountComponentIntoNode(rootId:String, container:js.html.Element, transaction: rx.browser.ReconcileTransaction, shouldReuseMarkup:Bool) {
+    var markup = mountComponent(rootId, transaction, 0);
+    rx.browser.ui.Environment.mountImageIntoNode(markup, container, shouldReuseMarkup);
+  }
+
+  public function mountComponentIntoNode(rootId, container, shouldReuseMarkup) {
+    var transaction = rx.browser.ReconcileTransaction.pool.getPooled();
+    transaction.perform(
+      _mountComponentIntoNode,
+      this, [rootId, container, transaction, shouldReuseMarkup]
+    );
+    rx.browser.ReconcileTransaction.pool.release(transaction);
+  }
+
   public function performUpdateIfNecessary() {
 
   }
