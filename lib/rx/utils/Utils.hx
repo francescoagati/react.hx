@@ -29,7 +29,7 @@ class Utils {
         } else {
           var storageName = nameSoFar + SEPARATOR + getComponentKey(child, 0);
           callback(traverseContext, child, storageName, indexSoFar);
-          // subtreeCount = 1;
+          subtreeCount = 1;
         }
       }
     }
@@ -83,6 +83,7 @@ class Utils {
     if (children == null) return null;
     var result = new Map<String, rx.core.Component>();
     traverseAllChildren(children, flattenSingleChildIntoContext, result);
+    trace(result);
     return result;
   }
 }

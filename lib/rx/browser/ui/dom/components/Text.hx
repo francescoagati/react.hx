@@ -9,6 +9,10 @@ class Text extends rx.core.Component {
 
   public override function mountComponent(rootId: String, transaction: rx.browser.ReconcileTransaction, mountDepth: Int):String {
     super.mountComponent(rootId, transaction, mountDepth);
-    return text;
+    return (
+      '<span ' + rx.browser.ui.dom.PropertyOperations.createMarkupForId(rootId) + '>' +
+        text +
+      '</span>'
+    );
   }
 }
