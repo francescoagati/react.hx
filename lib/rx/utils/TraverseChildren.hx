@@ -35,32 +35,19 @@ class TraverseChildren {
   public static var SUBSEPARATOR = ':';
   public static function traverseAllChildrenImpl(children: Array<rx.core.Component>, nameSoFar:String, indexSoFar:Int, callback:Dynamic, traverseContext:Dynamic):Int {
     var subtreeCount = 0;
+    var isOnlyChild = (nameSoFar == '');
     if (children != null && children.length > 0) {
+
       for (i in 0...children.length) {
         var child = children[i];
-        var nextName = nameSoFar;
-        if (nameSoFar == '') {
-          nextName += SUBSEPARATOR;
-        } else {
-          nextName += SEPARATOR;
-        }
-        nextName += getComponentKey(child, i);
-        var nextIndex = indexSoFar + subtreeCount;
-
-        if (child.children != null && child.children.length > 0) {
-          subtreeCount += traverseAllChildrenImpl(
-            child.children,
-            nextName,
-            nextIndex,
-            callback,
-            traverseContext
-          );
-        } else {
-          var storageName = nameSoFar + SEPARATOR + getComponentKey(child, 0);
-          callback(traverseContext, child, storageName, indexSoFar);
-          subtreeCount = 1;
-        }
+        var storageName = isOnlyChild ? SEPARATOR + getComponentKey(child, i) : nameSoFar;
+        callback(traverseContext, child, storageName, indexSoFar);
+        // var nextName = nameSoFar + (isOnlyChild ? SUBSEPARATOR : SEPARATOR) + getComponentKey(child, i);
+        // var nextIndex = indexSoFar + subtreeCount;
+        // subtreeCount += traverseAllChildrenImpl(child.children, nextName, nextIndex, callback, traverseContext);
+        subtreeCount += 1;
       }
+
     }
     return subtreeCount;
   }

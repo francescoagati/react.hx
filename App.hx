@@ -7,7 +7,7 @@ class App {
     
     var component = DOM.el('div', [
       DOM.el('div', [DOM.text('Hello')]),
-      DOM.el('div', [DOM.text('World')])
+      DOM.el('div', [DOM.text('World')]),
     ]);
 
     var d = js.Browser.document;
