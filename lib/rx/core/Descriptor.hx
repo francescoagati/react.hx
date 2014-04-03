@@ -20,5 +20,7 @@ class Descriptor {
     if (props != null)
       this.props = props;
     else this.props = new Map<String, Dynamic>();
+
+    this.props.set('children', children);
   }
 }

@@ -70,7 +70,8 @@ class Component extends rx.core.ContainerComponent {
   }
 
   public function createContentMarkup(transaction: rx.browser.ReconcileTransaction) {
-    var mountImages = this.mountChildren(this.children,transaction);
+    var children = this.props.get('children');
+    var mountImages = this.mountChildren(children, transaction);
     return mountImages.join('');
   }
 
@@ -79,11 +80,12 @@ class Component extends rx.core.ContainerComponent {
     props: rx.core.Descriptor.Props, 
     owner: rx.core.Owner,
     ?prevProps: rx.core.Descriptor.Props,
-    ?prevOwner: rx.core.Owner) {
+    ?prevOwner: rx.core.Owner,
+    ?prevChildren: Array<rx.core.Component>) {
   
-    super.updateComponent(transaction, prevProps, prevOwner);
-    _updateDOMProperties(prevProps, transaction);
-    _updateDOMChildren(prevProps, transaction);
+    super.updateComponent(transaction, props, owner);
+    _updateDOMProperties(props, transaction);
+    _updateDOMChildren(props, transaction);
 
   }
 
@@ -94,7 +96,7 @@ class Component extends rx.core.ContainerComponent {
     var styleUpdates = null;
 
     if (lastProps == null) return;
-    
+
     for (propKey in lastProps.keys()) {
       if (nextProps.exists(propKey)) {
         continue;
@@ -103,7 +105,17 @@ class Component extends rx.core.ContainerComponent {
     }
   }
 
-  public function _updateDOMChildren(props: rx.core.Descriptor.Props, transaction: rx.browser.ReconcileTransaction) {
-    this.updateChildren(this.children, transaction);
+  public function _updateDOMChildren(lastProps: rx.core.Descriptor.Props, transaction: rx.browser.ReconcileTransaction) {
+    var nextProps = this.props;
+    var lastChildren = lastProps.get('children');
+    var nextChildren = nextProps.get('children');
+    
+    if (lastChildren != null && nextChildren == null) {
+      this.updateChildren(null, transaction);
+    } else if (nextChildren != null) {
+      this.updateChildren(nextChildren, transaction);
+    }
+    
+    
   }
 }

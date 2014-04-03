@@ -20,7 +20,7 @@ class Component extends rx.core.Owner {
   var pendingDescriptor: Descriptor;
   var pendingProps: rx.core.Descriptor.Props;
   var pendingOwner: rx.core.Owner;
-
+  var pendingChildren: Array<rx.core.Component>;
   var lifecycleState: Lifecycle;
 
   public var pendingCallbacks: Array<Dynamic>;
@@ -99,6 +99,7 @@ class Component extends rx.core.Owner {
   public function receiveComponent(nextComponent:rx.core.Component, transaction:rx.browser.ReconcileTransaction) {
     pendingOwner = nextComponent.owner;
     pendingProps = nextComponent.props;
+    pendingChildren = nextComponent.children;
     _performUpdateIfNecessary(transaction);
   }
 
@@ -108,6 +109,7 @@ class Component extends rx.core.Owner {
     }
     var prevProps = this.props;
     var prevOwner = this.owner;
+    
     this.props = this.pendingProps;
     this.owner = this.pendingOwner;
     this.pendingProps = null;
@@ -125,7 +127,8 @@ class Component extends rx.core.Owner {
     prevProps:rx.core.Descriptor.Props, 
     prevOwner: rx.core.Owner, 
     ?prevState: Dynamic, 
-    ?prevContext: Dynamic) {
+    ?prevContext: Dynamic,
+    ?prevChildren: Array<rx.core.Component>) {
 
     var props = this.props;
     // If either the owner or a `ref` has changed, make sure the newest owner

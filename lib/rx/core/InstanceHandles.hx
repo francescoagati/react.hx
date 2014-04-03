@@ -34,6 +34,7 @@ class InstanceHandles {
   }
 
   public static function getNextDescendantId(ancestorId: String, destinationId: String) {
+    // untyped __js__('debugger');
     if (!isValidId(ancestorId) || !isValidId(destinationId)) 
       throw 'getNextDescendantId($ancestorId, $destinationId): Received an invalid DOM ID.';
     if (!isAncestorIdOf(ancestorId, destinationId))
@@ -42,13 +43,12 @@ class InstanceHandles {
 
     var start = ancestorId.length + SEPARATOR.length;
     var _i = null;
-    for (i in 0...destinationId.length) {
+    for (i in start...destinationId.length) {
       if (isBoundary(destinationId, i)) {
         _i = i; break;
       }
     }
-
-    return destinationId.substring(0, _i);
+    return destinationId.substr(0, _i);
   }
 
   public static var MAX_TREE_DEPTH = 100;
@@ -65,6 +65,7 @@ class InstanceHandles {
     var id = start;
     while (true) {
       var ret = null;
+
       id = traverse(id, stop);
       
       if ((!skipFirst || id != start) && (!skipLast || id!= stop)) {

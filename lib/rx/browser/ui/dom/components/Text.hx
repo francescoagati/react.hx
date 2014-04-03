@@ -15,6 +15,14 @@ class Text extends rx.core.Component {
   }
 
   public override function receiveComponent(nextComponent:rx.core.Component, transaction:rx.browser.ReconcileTransaction) {
-    trace('Text.receive; $text');
+    var next:Text = cast nextComponent;
+    var nextText = next.text;
+    if (nextText != this.text) {
+      this.text = nextText;
+      rx.browser.ui.dom.IdOperations.updateTextContentById(
+        this.rootNodeId,
+        nextText
+      );
+    }
   }
 }

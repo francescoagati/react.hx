@@ -128,7 +128,8 @@ class CompositeComponent<T> extends rx.core.Component {
     prevProps:rx.core.Descriptor.Props, 
     prevOwner: rx.core.Owner, 
     ?prevState: Dynamic, 
-    ?prevContext: Dynamic) {
+    ?prevContext: Dynamic,
+    ?prevChildren: Array<rx.core.Component>) {
 
     super.updateComponent(transaction, prevProps, prevOwner);
 

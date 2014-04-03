@@ -8,33 +8,36 @@ class RootState {
 }
 
 class MyComponent extends rx.core.CompositeComponent<RootState> {
- 
+  
+  var start = Date.now().getTime();
+
   public override function getInitialState() {
     return new RootState(' ');
   }
 
+  var c = 0;
   public override function componentDidMount() {
-
-    js.Browser.window.setTimeout(function () {
-      this.setState(new RootState('-'));
-    }, 1000);
+    js.Browser.window.setInterval(function () {
+      this.setState(new RootState(Std.string(c++)));
+    }, 0);
     
   }
 
   public override function componentWillUpdate(props, state, context) {
-    trace('Will update', state);
+    // trace('Will update', state);
   }
 
   public override function componentDidUpdate(props, state, context) {
-    trace('Did update', state);
+    // trace(Date.now().getTime() - start);
+    // start = Date.now().getTime();
   }
 
   public override function render():rx.core.Component {
-    return DOM.el('div', [for (i in 0...3) 
+    return DOM.el('div', [
       DOM.el('div', [
-        DOM.text('Hello world'),
+        DOM.text('Hello'),
         DOM.text(this.state.splitter),
-        DOM.text(Std.string(i))
+        DOM.text('World')
       ])
     ]);
   }

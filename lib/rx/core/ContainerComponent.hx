@@ -54,7 +54,9 @@ class ContainerComponent extends rx.core.Component {
     try {
       this._updateChildren(nextNestedChildren, transaction);
       errorThrown = false;
-    } catch(e:Dynamic) {}
+    } catch(e:js.Error) {
+      trace(e.stack);
+    }
 
     updateDepth--;
     if (updateDepth == 0) {
@@ -64,9 +66,20 @@ class ContainerComponent extends rx.core.Component {
   }
 
   public function _updateChildren(nextNestedChildren: Array<rx.core.Component>, transaction: rx.browser.ReconcileTransaction) {
-    for (child in nextNestedChildren) {
-      if (rx.core.Component.shouldUpdate(child, child)) {
-        child.receiveComponent(child, transaction);
+    var nextChildren = rx.utils.FlattenChildren.flattenChildren(nextNestedChildren);
+    var prevChildren = this.rendererChildren;
+
+    if ((nextChildren == null) && (rendererChildren == null)) {
+      return;
+    } 
+    for (name in nextChildren.keys()) {
+      var prevChild = null;
+      if (prevChildren != null) {
+        prevChild = prevChildren.get(name);
+      }
+      var nextChild = nextChildren.get(name);
+      if (rx.core.Component.shouldUpdate(prevChild, nextChild)) {
+        prevChild.receiveComponent(nextChild, transaction);
       }
     }
   }

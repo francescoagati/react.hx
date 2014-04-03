@@ -57,7 +57,7 @@ class Mount {
   }
 
 
-  public static function isValid(node: js.html.Node, id:String):Bool {
+  public static function isValid(node: js.html.Node, id: String):Bool {
     if (node != null) {
       if (internalGetId(node) != id) throw 'Mount: unexpected modification of `$ATTR_NAME`';
     
@@ -77,6 +77,7 @@ class Mount {
 
   public static function findReactNodeForId(id: String):js.html.Node {
     var reactRoot = findReactContainerForId(id);
+
     return findComponentRoot(reactRoot, id);
   }
 
