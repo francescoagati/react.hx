@@ -31,14 +31,14 @@ class ContainerComponent extends rx.core.Component {
     trace('ContainerComponent.updateTextContent');
   }
 
-  public static var updateQueue: Array<Dynamic> = new Array<Dynamic>();
-  public static var markupQueue: Array<Dynamic> = new Array<Dynamic>();
+  public static var updateQueue: Array<js.html.Node> = new Array<js.html.Node>();
+  public static var markupQueue: Array<String> = new Array<String>();
   public static function processQueue() {
     if (updateQueue.length > 0) {
-      // ReactComponent.BackendIDOperations.dangerouslyProcessChildrenUpdates(
-      //   updateQueue,
-      //   markupQueue
-      // );
+      rx.browser.ui.dom.IdOperations.dangerouslyProcessChildrenUpdates(
+        updateQueue,
+        markupQueue
+      );
       clearQueue();
     }
   }

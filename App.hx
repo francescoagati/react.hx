@@ -4,30 +4,29 @@ import rx.browser.ui.DOM;
 
 class RootState {
   public var splitter: String = ' ';
-  public function new() {};
+  public function new(splitter) { this.splitter = splitter; };
 }
 
 class MyComponent extends rx.core.CompositeComponent<RootState> {
  
   public override function getInitialState() {
-    return new RootState();
+    return new RootState(' ');
   }
 
   public override function componentDidMount() {
 
     js.Browser.window.setTimeout(function () {
-      this.state.splitter = ' - ';
-      this.digest();
+      this.setState(new RootState('-'));
     }, 1000);
     
   }
 
   public override function componentWillUpdate(props, state, context) {
-    trace('willUpdate');
+    trace('Will update', state);
   }
 
   public override function componentDidUpdate(props, state, context) {
-    trace('didUpdate');
+    trace('Did update', state);
   }
 
   public override function render():rx.core.Component {

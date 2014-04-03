@@ -53,6 +53,10 @@ class ReconcileTransaction extends rx.utils.Transaction {
     return mountReady;
   }
 
+  public function getPutListenerQueue():rx.browser.PutListenerQueue {
+    return putListenerQueue;
+  }
+
 
   /*
   public static var pool: Pooler<ReconcileTransaction> = new Pooler<ReconcileTransaction>();

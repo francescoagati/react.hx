@@ -15,7 +15,7 @@ class CompositeComponent<T> extends rx.core.Component {
   private var pendingState: T;
   private var pendingForceUpdate: Bool;
   private var defaultProps: rx.core.Descriptor.Props;
-
+  private var pendingContext: rx.core.Context;
   private var renderedComponent: rx.core.Component;
 
   public function new() {
@@ -46,17 +46,25 @@ class CompositeComponent<T> extends rx.core.Component {
   public function componentWillUpdate(props, state, context):Void {}
   public function componentDidUpdate(props, state, context):Void {}
 
+  public function componentWillReceiveProps(props, context):Void {}
+
+  public function shouldComponentUpdate(props, state, context): Bool {
+    return true;
+  }
+
   public function render():rx.core.Component { return null; }
 
   private function renderValidatedComponent():rx.core.Component {
 
     var renderedComponent = null;
-    // var previousContext = Context.current;
-    // Context.current = processChildContext(this.descriptor.context);
+    var previousContext = Context.current;
+    // Context.current = 
     rx.core.Owner.current = this;
     try {
       renderedComponent = this.render();
-    } catch(e:Dynamic) {}
+    } catch(e:js.Error) {
+      trace(e.stack);
+    }
     // Context.current = prev;
     rx.core.Owner.current = null;
 
@@ -91,12 +99,18 @@ class CompositeComponent<T> extends rx.core.Component {
     return markup;
   }
 
+  public function setState(state: T) {
+    pendingState = state;
+    digest();
+  }
+
   public function digest(?callback: Dynamic) {
+    pendingForceUpdate = true;
     rx.core.Updates.enqueueUpdate(this, callback);
   }
 
   public override function receiveComponent(nextComponent:rx.core.Component, transaction:rx.browser.ReconcileTransaction) {
-    if (nextComponent.descriptor == this.descriptor && nextComponent.owner != null) {
+    if (nextComponent.props == this.props && nextComponent.owner != null) {
       // Since props and context are immutable after the component is
       // mounted, we can do a cheap identity compare here to determine
       // if this is a superfluous reconcile.
@@ -139,70 +153,82 @@ class CompositeComponent<T> extends rx.core.Component {
     nextProps: rx.core.Descriptor.Props,
     nextOwner: rx.core.Owner,
     nextState: T,
-    nextFullContext: rx.core.Context,
     nextContext: rx.core.Context,
     transaction: rx.browser.ReconcileTransaction) {
 
     this.componentWillUpdate(nextProps, nextState, nextContext);
 
-    this.updateComponent(
-      transaction,
-      // prevProps,
-      // prevOwner,
-      // prevState,
-      // prevContext
-      props,
-      owner,
-      state,
-      context
-    );
+    var prevProps = this.props;
+    var prevState = this.state;
+    var prevContext = this.context;
 
-    transaction.getMountReady().enqueue(this, componentDidUpdate, [props, state, context]);
+    this.props = nextProps;
+    this.owner = nextOwner;
+    this.state = nextState;
+    this.context = nextContext;
+
+    this.updateComponent(transaction, prevProps, owner);
+
+    transaction.getMountReady().enqueue(this, componentDidUpdate, [prevProps, prevState, prevContext]);
 
   }
 
+  public function processProps(pendingProps: rx.core.Descriptor.Props):rx.core.Descriptor.Props {
+    return pendingProps;
+  }
+
+  public function processContext(pendingContext: rx.core.Context):rx.core.Context {
+    return pendingContext;
+  }
+
   public override function _performUpdateIfNecessary(transaction: rx.browser.ReconcileTransaction) {
-    // if (this._pendingProps == null &&
-    //     this._pendingState == null &&
-    //     this._pendingContext == null &&
-    //     !this._pendingForceUpdate) {
-    //   return;
-    // }
+    if (this.pendingProps == null &&
+        this.pendingState == null &&
+        this.pendingContext == null &&
+        !this.pendingForceUpdate) {
+      return;
+    }
 
-    // var nextFullContext = this._pendingContext || this._currentContext;
-    // var nextContext = this._processContext(nextFullContext);
-    // this._pendingContext = null;
+    var nextFullContext = this.pendingContext;
+    if (nextFullContext == null) nextFullContext = this.context;
+    var nextContext = this.processContext(nextFullContext);
+    this.pendingContext = null;
 
-    // var nextProps = this.props;
-    // if (this._pendingProps != null) {
-    //   nextProps = this._processProps(this._pendingProps);
-    //   this._pendingProps = null;
+    var nextProps = this.props;
+    if (this.pendingProps != null) {
+      nextProps = this.processProps(this.pendingProps);
+      this.pendingProps = null;
 
-    //   this._compositeLifeCycleState = CompositeLifeCycle.RECEIVING_PROPS;
-    //   if (this.componentWillReceiveProps) {
-    //     this.componentWillReceiveProps(nextProps, nextContext);
-    //   }
-    // }
+      this.compositeLifecycleState = CompositeLifecycle.ReceivingProps;
+      this.componentWillReceiveProps(nextProps, nextContext);
+    }
+    
 
     compositeLifecycleState = CompositeLifecycle.ReceivingState;
 
-    // var nextOwner = this._pendingOwner;
-    // var nextState = this._pendingState || this.state;
-    // this._pendingState = null;
+    var nextOwner = this.pendingOwner;
+    var nextState = this.pendingState;
+    if (nextState == null) nextState = this.state;
+    this.pendingState = null;
 
     try {
+      if (pendingForceUpdate || this.shouldComponentUpdate(nextProps, nextState, nextContext)) {
 
-      this._performComponentUpdate(
-        props,
-        owner,
-        state,
-        context,
-        context,
-        transaction
-      );
+        pendingForceUpdate = false;
+        this._performComponentUpdate( 
+          nextProps, 
+          nextOwner, 
+          nextState, 
+          nextContext, 
+          transaction);
+      } else {
+        props = nextProps;
+        state = nextState;
+        context = nextContext;
+      }
 
-    } catch(e:Dynamic) {
-      trace(e);
+    } catch(e:js.Error) {
+      trace(e.stack);
     }
 
     compositeLifecycleState = null;

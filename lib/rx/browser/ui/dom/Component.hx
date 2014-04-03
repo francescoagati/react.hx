@@ -19,6 +19,19 @@ class Component extends rx.core.ContainerComponent {
     );
   }
 
+  private static var ELEMENT_NODE_TYPE = 1;
+  private function putListener(id: String, registrationName: String, listener: Dynamic, transaction: rx.browser.ReconcileTransaction) {
+    var container = rx.browser.ui.Mount.findReactContainerForId(id);
+    if (container != null) {
+      var doc = container.nodeType == ELEMENT_NODE_TYPE ?
+        container.ownerDocument :
+        container;
+      // listenTo(registrationName, doc);
+      trace('listenTo: registrationName');
+    }
+    transaction.getPutListenerQueue().enqueuePutListener(id, registrationName, listener);
+  }
+
   public function createOpenTagMarkupAndPutListeners(transaction: rx.browser.ReconcileTransaction):String {
     var props = this.props;
     var ret = this.tagOpen;
@@ -32,7 +45,7 @@ class Component extends rx.core.ContainerComponent {
         }
 
         if (rx.browser.EventEmitter.registrationNameModules.exists(propKey)) {
-          // putListener(this._rootNodeID, propKey, propValue, transaction);
+          putListener(this.rootNodeId, propKey, propValue, transaction);
         } else {
           // if (propKey == STYLE) {
           //   if (propValue != null) {
@@ -68,14 +81,26 @@ class Component extends rx.core.ContainerComponent {
     ?prevProps: rx.core.Descriptor.Props,
     ?prevOwner: rx.core.Owner) {
   
-    super.updateComponent(transaction, props, owner);
-    _updateDOMProperties(props, transaction);
-    _updateDOMChildren(props, transaction);
+    super.updateComponent(transaction, prevProps, prevOwner);
+    _updateDOMProperties(prevProps, transaction);
+    _updateDOMChildren(prevProps, transaction);
 
   }
 
-  public function _updateDOMProperties(props: rx.core.Descriptor.Props, transaction: rx.browser.ReconcileTransaction) {
+  public function _updateDOMProperties(lastProps: rx.core.Descriptor.Props, transaction: rx.browser.ReconcileTransaction) {
+    var nextProps = this.props;
+    
+    var styleName = null;
+    var styleUpdates = null;
 
+    if (lastProps == null) return;
+    
+    for (propKey in lastProps.keys()) {
+      if (nextProps.exists(propKey)) {
+        continue;
+      }
+      // if (propKey == STYLE)
+    }
   }
 
   public function _updateDOMChildren(props: rx.core.Descriptor.Props, transaction: rx.browser.ReconcileTransaction) {

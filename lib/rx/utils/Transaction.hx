@@ -1,8 +1,8 @@
 package rx.utils;
 
 typedef Wrapper = {
-  initialize: Void->Void,
-  close: Void->Void
+  ?initialize: Void->Void,
+  ?close: Void->Void
 }
 
 typedef TimingMetrics = {
@@ -16,7 +16,7 @@ class Transaction {
   public var wrappersInitData: Array<Dynamic>;
   public var timingMetrics:TimingMetrics;
   var _isInTransaction: Bool;
-  public function getTransactionWrappers() {
+  public function getTransactionWrappers():Array<Wrapper> {
     return [];
   }
 
@@ -61,7 +61,7 @@ class Transaction {
   public function closeAll(startIndex: Int):Void {
     var wrappers = getTransactionWrappers();
     for (i in startIndex...wrappers.length) {
-      var wrapper = wrappers[i];
+      var wrapper:Wrapper = wrappers[i];
       wrapper.close();
     }
   }

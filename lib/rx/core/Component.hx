@@ -132,11 +132,11 @@ class Component extends rx.core.Owner {
     // has stored a reference to `this`, and the previous owner (if different)
     // has forgotten the reference to `this`.
     if (this.owner != prevOwner || props.get('ref') != prevProps.get('ref')) {
-      if (prevProps.get('ref') != null) {
+      if (prevProps != null && prevProps.get('ref') != null) {
         rx.core.Owner.removeComponentAsRefFrom(this, prevProps.get('ref'), prevOwner);
       }
       // Correct, even if the owner is the same, and only the ref has changed.
-      if (props.get('ref') != null) {
+      if (props != null && props.get('ref') != null) {
         rx.core.Owner.addComponentAsRefTo(this, props.get('ref'), this.owner);
       }
     }
