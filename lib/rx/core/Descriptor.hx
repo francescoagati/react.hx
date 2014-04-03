@@ -13,7 +13,12 @@ class Descriptor {
   public var props: Props;
 
   public function new(?children: Array<rx.core.Component> = null, ?props: Props = null) {
-    this.children = children;
-    this.props = props;
+    if (children != null)
+      this.children = children;
+    else this.children = new Array<rx.core.Component>();
+
+    if (props != null)
+      this.props = props;
+    else this.props = new Map<String, Dynamic>();
   }
 }

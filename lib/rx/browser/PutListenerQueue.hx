@@ -33,4 +33,12 @@ class PutListenerQueue {
     }
   }
 
+  public function reset() {
+    listenersToPut.splice(0, listenersToPut.length);
+  }
+
+  public function destructor() {
+    reset();
+  }
+
 }

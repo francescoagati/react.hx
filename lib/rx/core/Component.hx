@@ -16,7 +16,10 @@ class Component extends rx.core.Owner {
   public var context: rx.core.Context;
   public var owner: rx.core.Owner;
   public var descriptor:Descriptor;
-  var pendingDescriptor:Descriptor;
+
+  var pendingDescriptor: Descriptor;
+  var pendingProps: rx.core.Descriptor.Props;
+  var pendingOwner: rx.core.Owner;
 
   var lifecycleState: Lifecycle;
 
@@ -94,20 +97,21 @@ class Component extends rx.core.Owner {
   }
 
   public function receiveComponent(nextComponent:rx.core.Component, transaction:rx.browser.ReconcileTransaction) {
-    trace('receive');
+    pendingOwner = nextComponent.owner;
+    pendingProps = nextComponent.props;
     _performUpdateIfNecessary(transaction);
   }
 
   public function _performUpdateIfNecessary(transaction) {
-    // if (this._pendingProps == null) {
-    //   return;
-    // }
-    // var prevProps = this.props;
-    // var prevOwner = this._owner;
-    // this.props = this._pendingProps;
-    // this._owner = this._pendingOwner;
-    // this._pendingProps = null;
-    this.updateComponent(transaction, props, owner);
+    if (this.pendingProps == null) {
+      return;
+    }
+    var prevProps = this.props;
+    var prevOwner = this.owner;
+    this.props = this.pendingProps;
+    this.owner = this.pendingOwner;
+    this.pendingProps = null;
+    this.updateComponent(transaction, prevProps, prevOwner);
   }
 
   public function performUpdateIfNecessary() {
@@ -122,18 +126,31 @@ class Component extends rx.core.Owner {
     prevOwner: rx.core.Owner, 
     ?prevState: Dynamic, 
     ?prevContext: Dynamic) {
-      var props = this.props;
-      // If either the owner or a `ref` has changed, make sure the newest owner
-      // has stored a reference to `this`, and the previous owner (if different)
-      // has forgotten the reference to `this`.
-      if (this.owner != prevOwner || props.get('ref') != prevProps.get('ref')) {
-        if (prevProps.get('ref') != null) {
-          rx.core.Owner.removeComponentAsRefFrom(this, prevProps.get('ref'), prevOwner);
-        }
-        // Correct, even if the owner is the same, and only the ref has changed.
-        if (props.get('ref') != null) {
-          rx.core.Owner.addComponentAsRefTo(this, props.get('ref'), this.owner);
-        }
+
+    var props = this.props;
+    // If either the owner or a `ref` has changed, make sure the newest owner
+    // has stored a reference to `this`, and the previous owner (if different)
+    // has forgotten the reference to `this`.
+    if (this.owner != prevOwner || props.get('ref') != prevProps.get('ref')) {
+      if (prevProps.get('ref') != null) {
+        rx.core.Owner.removeComponentAsRefFrom(this, prevProps.get('ref'), prevOwner);
+      }
+      // Correct, even if the owner is the same, and only the ref has changed.
+      if (props.get('ref') != null) {
+        rx.core.Owner.addComponentAsRefTo(this, props.get('ref'), this.owner);
       }
     }
+
+  }
+
+  public function unmountComponent() {
+    if (!isMounted()) throw 'Can only unmount a mounted component.';
+    var props = this.props;
+    if (props.get('ref') != null) {
+      rx.core.Owner.removeComponentAsRefFrom(this, props.get('ref'), this.owner);
+    }
+    rx.browser.ui.Environment.unmountIdFromEnvironment(rootNodeId);
+    rootNodeId = null;
+    lifecycleState = Lifecycle.Unmounted;
+  }
 }

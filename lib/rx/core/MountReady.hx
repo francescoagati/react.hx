@@ -9,8 +9,8 @@ class MountReady {
       queue = initalCollection;
   }
 
-  public function enqueue(component: rx.core.Component, callback:Dynamic) {
-    queue.push({component: component, callback: callback});
+  public function enqueue(component: rx.core.Component, callback:Dynamic, ?args: Array<Dynamic> = null) {
+    queue.push({component: component, callback: callback, args: args});
   }
 
   public function notifyAll() {
@@ -19,14 +19,15 @@ class MountReady {
       for (item in q) {
         var component = item.component;
         var callback = item.callback;
-        Reflect.callMethod(component, callback, []);
+        var args = item.args;
+        Reflect.callMethod(component, callback, args);
       }
-      queue = new Array<Dynamic>();
+      queue.splice(0, queue.length);
     }
   }
 
   public function reset() {
-    queue = new Array<Dynamic>();
+    queue.splice(0, queue.length);
   }
 
   public function destruct() {

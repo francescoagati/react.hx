@@ -4,6 +4,7 @@ class Mount {
 
   public static var totalInstantiationTime: Int = 0;
   public static var totalInjectionTime: Int = 0;
+  public static var ATTR_NAME = rx.browser.ui.dom.Property.ID_ATTRIBUTE_NAME;
 
   public static function scrollMonitor(container: js.html.Element, renderCallback: Dynamic) {
     renderCallback();
@@ -24,21 +25,132 @@ class Mount {
   public static function internalGetId(node: js.html.Node):String {
     var id = '';
     if (Reflect.hasField(node, 'getAttribute') != null) {
-      id = Reflect.callMethod(node, Reflect.getProperty(node, 'getAttribute'), [rx.browser.ui.dom.Property.ID_ATTRIBUTE_NAME]);
+      id = Reflect.callMethod(node, Reflect.getProperty(node, 'getAttribute'), [ATTR_NAME]);
     }
     return id;
   }
 
+  static var nodeCache = new Map<String, js.html.Node>();
   public static function getId(node: js.html.Node):String {
     var id = internalGetId(node);
-    // TODO: node cache
+    if (id != null) {
+      if (nodeCache.exists(id)) {
+        var cached = nodeCache.get(id);
+        if (cached != node) throw 'Mount: Two valid but unequal nodes with the same `$ATTR_NAME`:$id';
+        nodeCache.set(id, node);
+      } else {
+        nodeCache.set(id, node);
+      }
+    }
     return id;
+  }
+
+  public static function purgeId(id: String):Void {
+    nodeCache.remove(id);
+  }
+
+  public static function getNode(id: String):js.html.Node {
+    if (!nodeCache.exists(id) || !isValid(nodeCache.get(id), id)) {
+      nodeCache.set(id, findReactNodeForId(id));
+    }
+    return nodeCache.get(id);
+  }
+
+
+  public static function isValid(node: js.html.Node, id:String):Bool {
+    if (node != null) {
+      if (internalGetId(node) != id) throw 'Mount: unexpected modification of `$ATTR_NAME`';
+    
+      var container = findReactContainerForId(id);
+      if (container != null && rx.browser.ui.dom.Node.containsNode(container, node)) {
+        return true;
+      }
+    }
+    return false;
   }
 
   public static function getReactRootId(container: js.html.Element):String {
     var rootElement = getReactRootElementInContainer(container);
     if (rootElement != null) return getId(rootElement);
     return null;
+  }
+
+  public static function findReactNodeForId(id: String):js.html.Node {
+    var reactRoot = findReactContainerForId(id);
+    return findComponentRoot(reactRoot, id);
+  }
+
+  static var findComponentRootReusableArray = new Array<js.html.Node>();
+  public static function findComponentRoot(ancestorNode, targetId):js.html.Node {
+    var firstChildren = findComponentRootReusableArray;
+    var childIndex = 0;
+
+    var deepestAncestor = findDeepestCachedAncestor(targetId);
+    if (deepestAncestor == null) deepestAncestor = ancestorNode;
+
+    firstChildren[0] = deepestAncestor.firstChild;
+    firstChildren.splice(1, firstChildren.length);
+
+    while (childIndex < firstChildren.length) {
+      var child = firstChildren[childIndex++];
+      var targetChild = null;
+
+      while (child != null) {
+
+        var childId = getId(child);
+        if (childId != null) {
+          if (targetId == childId) {
+            targetChild = child;
+          } else if (rx.core.InstanceHandles.isAncestorIdOf(childId, targetId)) {
+            firstChildren.splice(0, firstChildren.length);
+            childIndex = 0;
+            firstChildren.push(child.firstChild);
+          }
+
+        } else {
+
+          firstChildren.push(child.firstChild);
+
+        }
+
+        child = child.nextSibling;
+
+      }
+
+      if (targetChild != null) {
+        firstChildren.splice(0, firstChildren.length);
+        return targetChild;
+      }
+    }
+
+    firstChildren.splice(0, firstChildren.length);
+
+    throw 'findComponentRoot(..., $targetId) Unable to find element.';
+  }
+
+  public static function findDeepestCachedAncestorImpl(ancestorId) {
+    var ancestor = nodeCache.get(ancestorId);
+    if (ancestor != null && isValid(ancestor, ancestorId)) {
+      deepestNodeSoFar = ancestor;
+    } else {
+      return;
+    }
+  }
+
+  static var deepestNodeSoFar:js.html.Node = null;
+  public static function findDeepestCachedAncestor(targetId: String) {
+    deepestNodeSoFar = null;
+    rx.core.InstanceHandles.traverseAncestors(targetId, findDeepestCachedAncestorImpl);
+
+    var foundNode = deepestNodeSoFar;
+    deepestNodeSoFar = null;
+    return foundNode;
+  }
+
+  public static function findReactContainerForId(id: String):js.html.Node {
+    var reactRootId = rx.core.InstanceHandles.getReactRootIdFromNodeId(id);
+    var container = containersByReactRootId.get(reactRootId);
+    return container;
   }
 
   public static function getInstanceByContainer(container: js.html.Element):rx.core.Component {

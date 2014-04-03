@@ -96,14 +96,13 @@ class CompositeComponent<T> extends rx.core.Component {
   }
 
   public override function receiveComponent(nextComponent:rx.core.Component, transaction:rx.browser.ReconcileTransaction) {
-    if (nextComponent == this) {
+    if (nextComponent.descriptor == this.descriptor && nextComponent.owner != null) {
       // Since props and context are immutable after the component is
       // mounted, we can do a cheap identity compare here to determine
       // if this is a superfluous reconcile.
       return;
     }
-    trace('haha');
-    // _pendingContext = nextComponent._currentContext;
+    
     super.receiveComponent(
       nextComponent,
       transaction
@@ -125,7 +124,13 @@ class CompositeComponent<T> extends rx.core.Component {
     if (rx.core.Component.shouldUpdate(prevComponent, nextComponent)) {
       prevComponent.receiveComponent(nextComponent, transaction);
     } else {
+      
+      var thisId = rootNodeId;
+      var prevComponentId = prevComponent.rootNodeId;
+      prevComponent.unmountComponent();
+      var nextMarkup = renderedComponent.mountComponent(thisId, transaction, mountDepth + 1);
 
+      rx.browser.ui.dom.IdOperations.dangerouslyReplaceNodeWithMarkupById(prevComponentId, nextMarkup);
     }
 
   }
@@ -152,11 +157,7 @@ class CompositeComponent<T> extends rx.core.Component {
       context
     );
 
-    transaction.getMountReady().enqueue(
-      this, function () {
-        componentDidUpdate(props, state, context);
-      }
-    );
+    transaction.getMountReady().enqueue(this, componentDidUpdate, [props, state, context]);
 
   }
 
@@ -200,7 +201,9 @@ class CompositeComponent<T> extends rx.core.Component {
         transaction
       );
 
-    } catch(e:Dynamic) {}
+    } catch(e:Dynamic) {
+      trace(e);
+    }
 
     compositeLifecycleState = null;
   }

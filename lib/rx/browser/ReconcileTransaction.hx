@@ -26,8 +26,12 @@ class ReconcileTransaction extends rx.utils.Transaction {
     };
 
     var putListenerQueueing = {
-      initialize: function () {},
-      close: function () {}
+      initialize: function () {
+        putListenerQueue.reset();
+      },
+      close: function () {
+        putListenerQueue.putListeners();
+      }
     };
 
     return [selectionRestoration, eventSupression, onDomReadyQueueing, putListenerQueueing];

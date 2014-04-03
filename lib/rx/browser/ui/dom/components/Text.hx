@@ -13,4 +13,8 @@ class Text extends rx.core.Component {
     var id = rx.browser.ui.dom.PropertyOperations.createMarkupForId(rootId);
     return '<span $id>$text</span>';
   }
+
+  public override function receiveComponent(nextComponent:rx.core.Component, transaction:rx.browser.ReconcileTransaction) {
+    trace('Text.receive; $text');
+  }
 }

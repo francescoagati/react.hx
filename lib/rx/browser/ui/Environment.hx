@@ -5,4 +5,8 @@ class Environment {
     //TODO: reuse markup
     container.innerHTML = markup;
   }
+
+  public static function unmountIdFromEnvironment(rootNodeId: String) {
+    rx.browser.ui.Mount.purgeId(rootNodeId);
+  }
 }

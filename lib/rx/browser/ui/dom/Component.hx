@@ -31,7 +31,7 @@ class Component extends rx.core.ContainerComponent {
           continue;
         }
 
-        if (false) {
+        if (rx.browser.EventEmitter.registrationNameModules.exists(propKey)) {
           // putListener(this._rootNodeID, propKey, propValue, transaction);
         } else {
           // if (propKey == STYLE) {
@@ -41,7 +41,7 @@ class Component extends rx.core.ContainerComponent {
           //   propValue = CSSPropertyOperations.createMarkupForStyles(propValue);
           // }
           var markup = PropertyOperations.createMarkupForProperty(propKey, propValue);
-          if (markup) {
+          if (markup != '') {
             ret += ' ' + markup;
           }
         }
@@ -59,5 +59,26 @@ class Component extends rx.core.ContainerComponent {
   public function createContentMarkup(transaction: rx.browser.ReconcileTransaction) {
     var mountImages = this.mountChildren(this.children,transaction);
     return mountImages.join('');
+  }
+
+  public override function updateComponent(
+    transaction: rx.browser.ReconcileTransaction, 
+    props: rx.core.Descriptor.Props, 
+    owner: rx.core.Owner,
+    ?prevProps: rx.core.Descriptor.Props,
+    ?prevOwner: rx.core.Owner) {
+  
+    super.updateComponent(transaction, props, owner);
+    _updateDOMProperties(props, transaction);
+    _updateDOMChildren(props, transaction);
+
+  }
+
+  public function _updateDOMProperties(props: rx.core.Descriptor.Props, transaction: rx.browser.ReconcileTransaction) {
+
+  }
+
+  public function _updateDOMChildren(props: rx.core.Descriptor.Props, transaction: rx.browser.ReconcileTransaction) {
+    this.updateChildren(this.children, transaction);
   }
 }

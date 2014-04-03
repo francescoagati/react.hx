@@ -22,6 +22,10 @@ class MyComponent extends rx.core.CompositeComponent<RootState> {
     
   }
 
+  public override function componentWillUpdate(props, state, context) {
+    trace('willUpdate');
+  }
+
   public override function componentDidUpdate(props, state, context) {
     trace('didUpdate');
   }
@@ -29,9 +33,7 @@ class MyComponent extends rx.core.CompositeComponent<RootState> {
   public override function render():rx.core.Component {
     return DOM.el('div', [for (i in 0...3) 
       DOM.el('div', [
-        DOM.text('Hello'),
-        DOM.text(this.state.splitter),
-        DOM.text('World'),
+        DOM.text('Hello world'),
         DOM.text(this.state.splitter),
         DOM.text(Std.string(i))
       ])
