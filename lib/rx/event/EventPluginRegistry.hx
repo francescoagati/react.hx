@@ -1,5 +1,5 @@
 package rx.event;
 
 class EventPluginRegistry {
-  public static var registrationNameModules: Map<String, Dynamic> = new Map<String, Dynamic>();
+  public static var registrationNameModules: rx.core.Props = {};
 }

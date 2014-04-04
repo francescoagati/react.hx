@@ -20,9 +20,9 @@ class Owner {
     }
   }
 
-  var refs: Map<String, Component>;
+  var refs: rx.core.Props;
   public function new() {
-    refs = new Map<String, Component>();
+    refs = {};
   }
 
   public function attachRef(ref:String, component: Component):Void {

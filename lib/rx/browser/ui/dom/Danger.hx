@@ -53,7 +53,7 @@ class Danger {
 
   public static function dangerouslyRenderMarkup(markupList: Array<String>):Array<js.html.Node> {
     var nodeName = null;
-    var markupByNodeName = new Map<String, Array<String>>();
+    var markupByNodeName:rx.core.Props = {};
 
     for (i in 0...markupList.length) {
       nodeName = getNodeName(markupList[i]);
@@ -63,21 +63,21 @@ class Danger {
     }
     var resultList = [];
     var resultListAssignmentCount = 0;
-    
+
     for (nodeName in markupByNodeName.keys()) {
-      var markupListByNodeName = markupByNodeName.get(nodeName);
+      var markupListByNodeName:Array<String> = markupByNodeName.get(nodeName);
 
       for (resultIndex in 0...markupListByNodeName.length) {
         var markup = markupListByNodeName[resultIndex];
         markupListByNodeName[resultIndex] = OPEN_TAG_NAME_EXP.replace(markup, '$1 ' + RESULT_INDEX_ATTR + '="' + resultIndex + '" ');
       }
-      
+
       // Render each group of markup with similar wrapping `nodeName`.
       var renderNodes:Array<js.html.Element> = cast createNodesFromMarkup(
         markupListByNodeName.join(''),
         function () {} // Do nothing special with <script> tags.
       );
-      
+
       for (i in 0...renderNodes.length) {
         var renderNode = renderNodes[i];
         if (renderNode.hasAttribute != null &&

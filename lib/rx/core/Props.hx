@@ -11,4 +11,6 @@ abstract Props({}) from {} {
     untyped this[name] = value;
   inline function exists(name: String):Bool
     return untyped this[name] != undefined;
+  inline function remove(name: String)
+    untyped Reflect.deleteField(this, name);
 }

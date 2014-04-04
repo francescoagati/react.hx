@@ -211,12 +211,12 @@ class Property {
     return cast (Reflect.field(Check.MUST_USE_ATTRIBUTE, name) & Check.HAS_POSITIVE_NUMERIC_VALUE);
   }
 
-  static var defaultValueCache = new Map<String, Map<String, Dynamic>>();
+  static var defaultValueCache: rx.core.Props = {};
   public static function getDefaultValueForProperty(nodeName: String, prop: String) {
-    var nodeDefaults = defaultValueCache.get(nodeName);
+    var nodeDefaults:rx.core.Props = defaultValueCache.get(nodeName);
     var testElement;
     if (nodeDefaults == null) {
-      nodeDefaults = new Map<String, Dynamic>();
+      nodeDefaults = {};
       defaultValueCache.set(nodeName, nodeDefaults);
     }
     if (!nodeDefaults.exists(prop)) {

@@ -13,9 +13,9 @@ enum UpdateTypes {
 
 class ContainerComponent extends Component {
   public static var updateDepth:Int = 0;
-  var renderedChildren: Map<String, Component>;
+  var renderedChildren: rx.core.Props;
   public function mountChildren(nestedChildren:Array<Component>, transaction:ReconcileTransaction) {
-    var children:Map<String, Component> = FlattenChildren.flattenChildren(nestedChildren);
+    var children:Props = FlattenChildren.flattenChildren(nestedChildren);
     var mountImages = [];
     var index = 0;
     renderedChildren = children;
@@ -70,7 +70,7 @@ class ContainerComponent extends Component {
   }
 
   public function _updateChildren(nextNestedChildren: Array<Component>, transaction: ReconcileTransaction) {
-    var nextChildren:Map<String, rx.core.Component> = FlattenChildren.flattenChildren(nextNestedChildren);
+    var nextChildren:Props = FlattenChildren.flattenChildren(nextNestedChildren);
     var prevChildren = this.renderedChildren;
 
     if ((nextChildren == null) && (renderedChildren == null)) {
@@ -155,7 +155,7 @@ class ContainerComponent extends Component {
     );
     child.mountIndex = index;
     this.createChild(child, mountImage);
-    if(renderedChildren == null) this.renderedChildren = new Map<String, Component>();
+    if(renderedChildren == null) this.renderedChildren = {};
     renderedChildren.set(name, child);
 
   }

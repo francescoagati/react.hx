@@ -10,14 +10,14 @@ import rx.browser.ui.dom.components.Text in TextComponent;
 class DOM {
 
   static var emptyDescriptor = new rx.core.Descriptor(null, null);
-  public static var tagsMap: Map<String, Bool> = [
-    'a' => false,
-    'b' => false,
-    'button' => false,
-    'form' => false,
-    'div' => false,
-    'span' => false
-  ];
+  public static var tagsMap: rx.core.Props = {
+    a: false,
+    b: false,
+    button: false,
+    form: false,
+    div: false,
+    span: false
+  };
 
   public static function el(tagName: String, ?children: Array<Component> = null, ?props: Props = null) {
     var descriptor = new Descriptor(children, props);

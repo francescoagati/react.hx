@@ -27,8 +27,8 @@ class ChildrenOperations {
   // ### Public
 
   public static function processUpdates(updates: Array<Dynamic>, markupList: Array<String>) {
-    
-    var initialChildren: Map<String, Array<js.html.Node>> = null;
+
+    var initialChildren: rx.core.Props = null;
     var updatedChildren = null;
     for (update in updates) {
       if (update.type == UpdateTypes.MoveExisting || update.type == UpdateTypes.RemoveNode) {
@@ -36,7 +36,7 @@ class ChildrenOperations {
         var updatedChild = update.parentNode.childNodes[updatedIndex];
         var parentId = update.parentId;
 
-        if (initialChildren == null) initialChildren = new Map<String, Array<js.html.Node>>();
+        if (initialChildren == null) initialChildren = {};
         if (updatedChildren == null) updatedChildren = new Array<js.html.Node>();
         updatedChildren.push(updatedChild);
         if (!initialChildren.exists(parentId) || initialChildren.get(parentId) == null) {
@@ -50,7 +50,6 @@ class ChildrenOperations {
     }
 
     var renderedMarkup = Danger.dangerouslyRenderMarkup(markupList);
-
     if (updatedChildren != null && updatedChildren.length > 0) {
       for (child in updatedChildren) {
         child.parentNode.removeChild(child);

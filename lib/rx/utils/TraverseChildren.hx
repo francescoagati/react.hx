@@ -2,11 +2,11 @@ package rx.utils;
 
 class TraverseChildren {
 
-  static var userProvidedKeyEscaperLookup: Map<String, String> = [
-    '='=> '=0',
-    '.'=> '=1',
-    ':'=> '=2'
-  ];
+  static var userProvidedKeyEscaperLookup: rx.core.Props = {
+    '=': '=0',
+    '.': '=1',
+    ':': '=2'
+  };
 
   static var userProvidedKeyEscapeRegex:EReg = ~/[=.:]/g;
 
@@ -32,7 +32,7 @@ class TraverseChildren {
   public static inline var SEPARATOR = '.';
   public static inline var SUBSEPARATOR = ':';
 
-  public static function traverseAllChildren(children:Array<rx.core.Component>, callback: Dynamic, traverseContext: Map<String, rx.core.Component>) {
+  public static function traverseAllChildren(children:Array<rx.core.Component>, callback: Dynamic, traverseContext: rx.core.Props) {
     for (i in 0...children.length) {
       var child = children[i];
       var storageName = SEPARATOR + getComponentKey(child, i);

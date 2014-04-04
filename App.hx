@@ -42,7 +42,7 @@ class MyComponent extends CompositeComponent<RootState> {
 
   public override function render() {
     return DOM.el('div', [for(i in 0...c) DOM.el('div', [
-        DOM.text(Std.string(this.c))
+        DOM.text('Hello world ' + Std.string(this.c))
       ])]
     );
   }
