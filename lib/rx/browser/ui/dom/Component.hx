@@ -108,7 +108,33 @@ class Component extends ContainerComponent {
       if (nextProps.exists(propKey)) {
         continue;
       }
-      // if (propKey == STYLE)
+      if (propKey == 'azaza') {
+
+      } else if (rx.browser.EventEmitter.registrationNameModules.get(propKey)) {
+
+      } else if (
+        rx.browser.ui.dom.Property.isStandardName(propKey) ||
+        rx.browser.ui.dom.Property.isCustomAttribute(propKey)
+      ) {
+        rx.browser.ui.dom.IdOperations.deletePropertyById(this.rootNodeId, propKey);
+      }
+    }
+
+    for (propKey in nextProps.keys()) {
+      var nextProp = nextProps.get(propKey);
+      var lastProp = lastProps.get(propKey);
+
+      if (nextProp == lastProp) continue;
+      if (propKey == 'style') {
+
+      } else if (rx.browser.EventEmitter.registrationNameModules.get(propKey)) {
+
+      } else if (
+        rx.browser.ui.dom.Property.isStandardName(propKey) ||
+        rx.browser.ui.dom.Property.isCustomAttribute(propKey)
+      ) {
+        rx.browser.ui.dom.IdOperations.updatePropertyById(this.rootNodeId, propKey, nextProp);
+      }
     }
   }
 

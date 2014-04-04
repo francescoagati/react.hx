@@ -13,15 +13,13 @@ class MyComponent extends CompositeComponent<RootState> {
 
   var c = 0;
   public override function getInitialState() {
-    return new RootState(Std.string(c));
+    return new RootState('Om-nom-nom-nom');
   }
 
   var time = Date.now().getTime();
   var interval: Int;
   public override function componentDidMount() {
-    // interval = js.Browser.window.setInterval(function() {
-    //   this.setState(new RootState(Std.string(c++)));
-    // }, 16);
+    this.setState(new RootState('Ahaha'));
   }
 
   public override function componentWillUpdate(props, state, context) {
@@ -45,7 +43,7 @@ class MyComponent extends CompositeComponent<RootState> {
         DOM.text(this.state.splitter),
         DOM.text(' World')
       ], [
-        'data-attr'=>'Hello'
+        'data-attr'=> this.state.splitter
       ]/*)*/
     );
   }
