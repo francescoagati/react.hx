@@ -1,15 +1,20 @@
 package rx.core;
 
+import rx.core.Descriptor;
+import rx.browser.ReconcileTransaction;
+import rx.browser.ui.Environment;
+import rx.core.Owner;
+
 enum Lifecycle {
   Mounted;
   Unmounted;
 }
 
-class Component extends rx.core.Owner {
-  
+class Component extends Owner {
+
   public static function shouldUpdate(prevComponent, nextComponent):Bool {
-    if (prevComponent != null && 
-        nextComponent != null && 
+    if (prevComponent != null &&
+        nextComponent != null &&
         prevComponent.props.get('key') == nextComponent.props.get('key') != null) {
 
       if (prevComponent.owner == nextComponent.owner) {
@@ -17,20 +22,20 @@ class Component extends rx.core.Owner {
       }
 
     }
-    
+
     return false;
   }
 
-  public var props: rx.core.Descriptor.Props;
-  public var children: Array<rx.core.Component>;
+  public var props: Descriptor.Props;
+  public var children: Array<Component>;
   public var context: rx.core.Context;
-  public var owner: rx.core.Owner;
+  public var owner: Owner;
   public var descriptor:Descriptor;
 
   var pendingDescriptor: Descriptor;
-  var pendingProps: rx.core.Descriptor.Props;
-  var pendingOwner: rx.core.Owner;
-  var pendingChildren: Array<rx.core.Component>;
+  var pendingProps: Descriptor.Props;
+  var pendingOwner: Owner;
+  var pendingChildren: Array<Component>;
   var lifecycleState: Lifecycle;
 
   public var pendingCallbacks: Array<Dynamic>;
@@ -40,11 +45,11 @@ class Component extends rx.core.Owner {
 
   public function isMounted():Bool return lifecycleState == Lifecycle.Mounted;
 
-  public function isOwnedBy(owner:rx.core.Owner):Bool {
+  public function isOwnedBy(owner:Owner):Bool {
     return owner == this.owner;
   }
 
-  public function setProps(partialProps: rx.core.Descriptor.Props, callback: Dynamic) {
+  public function setProps(partialProps: Descriptor.Props, callback: Dynamic) {
     var descr = pendingDescriptor;
     if (descr == null) descr = descriptor;
     replaceProps(
@@ -53,25 +58,25 @@ class Component extends rx.core.Owner {
     );
   }
 
-  public function replaceProps(props:rx.core.Descriptor.Props, callback: Dynamic) {
+  public function replaceProps(props:Descriptor.Props, callback: Dynamic) {
     if (!isMounted()) throw 'Can only update a mounted component';
     if (mountDepth != null) throw 'You called `setProps` or `replaceProps` on a component with a parent.';
 
     var descr = pendingDescriptor;
     if (descr == null) descr = this.descriptor;
 
-    this.pendingDescriptor = rx.core.Descriptor.cloneAndReplaceProps(descr, props);
+    this.pendingDescriptor = Descriptor.cloneAndReplaceProps(descr, props);
     rx.core.Updates.enqueueUpdate(this, callback);
   }
 
-  public function new(descriptor: rx.core.Descriptor) {
+  public function new(descriptor: Descriptor) {
     super();
     this.children = descriptor.children;
     this.props = descriptor.props;
     this.descriptor = descriptor;
 
     this.context = rx.core.Context.current;
-    this.owner = rx.core.Owner.current;
+    this.owner = Owner.current;
 
     this.lifecycleState = Lifecycle.Unmounted;
     this.pendingCallbacks = null;
@@ -80,7 +85,7 @@ class Component extends rx.core.Owner {
 
   }
 
-  public function mountComponent(rootId: String, transaction: rx.browser.ReconcileTransaction, mountDepth: Int):String {
+  public function mountComponent(rootId: String, transaction: ReconcileTransaction, mountDepth: Int):String {
     var props = this.props;
     if (props != null && props.get('ref') != null) {
       var owner = this.owner;
@@ -92,21 +97,21 @@ class Component extends rx.core.Owner {
     return null;
   }
 
-  public function _mountComponentIntoNode(rootId:String, container:js.html.Element, transaction: rx.browser.ReconcileTransaction, shouldReuseMarkup:Bool) {
+  public function _mountComponentIntoNode(rootId:String, container:js.html.Element, transaction: ReconcileTransaction, shouldReuseMarkup:Bool) {
     var markup = mountComponent(rootId, transaction, 0);
-    rx.browser.ui.Environment.mountImageIntoNode(markup, container, shouldReuseMarkup);
+    Environment.mountImageIntoNode(markup, container, shouldReuseMarkup);
   }
 
   public function mountComponentIntoNode(rootId, container, shouldReuseMarkup) {
-    var transaction = rx.browser.ReconcileTransaction.pool.getPooled();
+    var transaction = ReconcileTransaction.pool.getPooled();
     transaction.perform(
       _mountComponentIntoNode,
       this, [rootId, container, transaction, shouldReuseMarkup]
     );
-    rx.browser.ReconcileTransaction.pool.release(transaction);
+    ReconcileTransaction.pool.release(transaction);
   }
 
-  public function receiveComponent(nextComponent:rx.core.Component, transaction:rx.browser.ReconcileTransaction) {
+  public function receiveComponent(nextComponent:Component, transaction:ReconcileTransaction) {
     pendingOwner = nextComponent.owner;
     pendingProps = nextComponent.props;
     pendingChildren = nextComponent.children;
@@ -119,7 +124,7 @@ class Component extends rx.core.Owner {
     }
     var prevProps = this.props;
     var prevOwner = this.owner;
-    
+
     this.props = this.pendingProps;
     this.owner = this.pendingOwner;
     this.pendingProps = null;
@@ -127,18 +132,18 @@ class Component extends rx.core.Owner {
   }
 
   public function performUpdateIfNecessary() {
-    var transaction = rx.browser.ReconcileTransaction.pool.getPooled();
+    var transaction = ReconcileTransaction.pool.getPooled();
     transaction.perform(this._performUpdateIfNecessary, this, [transaction]);
-    rx.browser.ReconcileTransaction.pool.release(transaction);
+    ReconcileTransaction.pool.release(transaction);
   }
 
   public function updateComponent(
-    transaction:rx.browser.ReconcileTransaction, 
-    prevProps:rx.core.Descriptor.Props, 
-    prevOwner: rx.core.Owner, 
-    ?prevState: Dynamic, 
+    transaction:ReconcileTransaction,
+    prevProps:Descriptor.Props,
+    prevOwner: Owner,
+    ?prevState: Dynamic,
     ?prevContext: Dynamic,
-    ?prevChildren: Array<rx.core.Component>) {
+    ?prevChildren: Array<Component>) {
 
     var props = this.props;
     // If either the owner or a `ref` has changed, make sure the newest owner
@@ -146,11 +151,11 @@ class Component extends rx.core.Owner {
     // has forgotten the reference to `this`.
     if (this.owner != prevOwner || props.get('ref') != prevProps.get('ref')) {
       if (prevProps != null && prevProps.get('ref') != null) {
-        rx.core.Owner.removeComponentAsRefFrom(this, prevProps.get('ref'), prevOwner);
+        Owner.removeComponentAsRefFrom(this, prevProps.get('ref'), prevOwner);
       }
       // Correct, even if the owner is the same, and only the ref has changed.
       if (props != null && props.get('ref') != null) {
-        rx.core.Owner.addComponentAsRefTo(this, props.get('ref'), this.owner);
+        Owner.addComponentAsRefTo(this, props.get('ref'), this.owner);
       }
     }
 
@@ -160,9 +165,9 @@ class Component extends rx.core.Owner {
     if (!isMounted()) throw 'Can only unmount a mounted component.';
     var props = this.props;
     if (props.get('ref') != null) {
-      rx.core.Owner.removeComponentAsRefFrom(this, props.get('ref'), this.owner);
+      Owner.removeComponentAsRefFrom(this, props.get('ref'), this.owner);
     }
-    rx.browser.ui.Environment.unmountIdFromEnvironment(rootNodeId);
+    Environment.unmountIdFromEnvironment(rootNodeId);
     rootNodeId = null;
     lifecycleState = Lifecycle.Unmounted;
   }

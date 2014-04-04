@@ -1,8 +1,14 @@
 package rx.browser;
 
-class ReconcileTransaction extends rx.utils.Transaction {
+import rx.utils.Transaction;
+import rx.utils.PooledClass;
 
-  public static var pool = new rx.utils.PooledClass<ReconcileTransaction>();
+import rx.core.MountReady;
+import rx.browser.PutListenerQueue;
+
+class ReconcileTransaction extends Transaction {
+
+  public static var pool = new PooledClass<ReconcileTransaction>();
 
   public override function getTransactionWrappers():Array<rx.utils.Transaction.Wrapper> {
 
@@ -39,21 +45,21 @@ class ReconcileTransaction extends rx.utils.Transaction {
   }
 
   public var renderToStaticMarkup: Bool;
-  public var mountReady: rx.core.MountReady;
-  var putListenerQueue: rx.browser.PutListenerQueue;
+  public var mountReady: MountReady;
+  var putListenerQueue: PutListenerQueue;
 
   public function new(_) {
     reinitializeTransaction();
     renderToStaticMarkup = false;
-    mountReady = rx.core.MountReady.pool.getPooled();
-    putListenerQueue = rx.browser.PutListenerQueue.pool.getPooled();
+    mountReady = MountReady.pool.getPooled();
+    putListenerQueue = PutListenerQueue.pool.getPooled();
   }
 
-  public function getMountReady():rx.core.MountReady {
+  public function getMountReady():MountReady {
     return mountReady;
   }
 
-  public function getPutListenerQueue():rx.browser.PutListenerQueue {
+  public function getPutListenerQueue():PutListenerQueue {
     return putListenerQueue;
   }
 

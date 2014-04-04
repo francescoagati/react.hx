@@ -1,5 +1,7 @@
 package rx.core;
 
+import rx.core.Component;
+
 class Owner {
 
   public static var current: Owner = null;
@@ -8,22 +10,22 @@ class Owner {
     return true;
   }
 
-  public static function addComponentAsRefTo(component: rx.core.Component, ref: String, owner: Owner) {
+  public static function addComponentAsRefTo(component: Component, ref: String, owner: Owner) {
     owner.attachRef(ref, component);
   }
 
-  public static function removeComponentAsRefFrom(component: rx.core.Component, ref: String, owner: Owner) {
+  public static function removeComponentAsRefFrom(component: Component, ref: String, owner: Owner) {
     if (owner.refs.get(ref) == component) {
       owner.detachRef(ref);
     }
   }
 
-  var refs: Map<String, rx.core.Component>;
+  var refs: Map<String, Component>;
   public function new() {
-    refs = new Map<String, rx.core.Component>();
+    refs = new Map<String, Component>();
   }
 
-  public function attachRef(ref:String, component: rx.core.Component):Void {
+  public function attachRef(ref:String, component: Component):Void {
     if (!component.isOwnedBy(this)) throw 'Only a component\'s owner can store a ref to it.';
     refs.set(ref, component);
   }

@@ -1,5 +1,9 @@
 package rx.core;
 
+import rx.core.Component;
+import rx.browser.ReconcileTransaction;
+import rx.utils.FlattenChildren;
+
 enum UpdateTypes {
   InsertMarkup;
   MoveExisting;
@@ -7,11 +11,11 @@ enum UpdateTypes {
   TextContent;
 }
 
-class ContainerComponent extends rx.core.Component {
+class ContainerComponent extends Component {
   public static var updateDepth:Int = 0;
-  var renderedChildren: Map<String, rx.core.Component>;
-  public function mountChildren(nestedChildren:Array<rx.core.Component>, transaction:rx.browser.ReconcileTransaction) {
-    var children:Map<String, rx.core.Component> = rx.utils.FlattenChildren.flattenChildren(nestedChildren);
+  var renderedChildren: Map<String, Component>;
+  public function mountChildren(nestedChildren:Array<Component>, transaction:ReconcileTransaction) {
+    var children:Map<String, Component> = FlattenChildren.flattenChildren(nestedChildren);
     var mountImages = [];
     var index = 0;
     renderedChildren = children;
@@ -48,7 +52,7 @@ class ContainerComponent extends rx.core.Component {
     markupQueue.splice(0, markupQueue.length);
   }
 
-  public function updateChildren(nextNestedChildren: Array<rx.core.Component>, transaction: rx.browser.ReconcileTransaction) {
+  public function updateChildren(nextNestedChildren: Array<Component>, transaction: ReconcileTransaction) {
     updateDepth++;
     var errorThrown = true;
     try {
@@ -62,11 +66,11 @@ class ContainerComponent extends rx.core.Component {
     if (updateDepth == 0) {
       errorThrown ? clearQueue() : processQueue();
     }
-    
+
   }
 
-  public function _updateChildren(nextNestedChildren: Array<rx.core.Component>, transaction: rx.browser.ReconcileTransaction) {
-    var nextChildren = rx.utils.FlattenChildren.flattenChildren(nextNestedChildren);
+  public function _updateChildren(nextNestedChildren: Array<Component>, transaction: ReconcileTransaction) {
+    var nextChildren = FlattenChildren.flattenChildren(nextNestedChildren);
     var prevChildren = this.renderedChildren;
 
     if ((nextChildren == null) && (renderedChildren == null)) {
@@ -75,7 +79,7 @@ class ContainerComponent extends rx.core.Component {
 
     var lastIndex = 0;
     var nextIndex = 0;
-    
+
     for (name in nextChildren.keys()) {
       var prevChild = null;
       if (prevChildren != null) {
@@ -83,8 +87,8 @@ class ContainerComponent extends rx.core.Component {
       }
 
       var nextChild = nextChildren.get(name);
-      
-      if (rx.core.Component.shouldUpdate(prevChild, nextChild)) {
+
+      if (Component.shouldUpdate(prevChild, nextChild)) {
         this.moveChild(prevChild, nextIndex, lastIndex);
         lastIndex = Std.int(Math.max(prevChild.mountIndex, lastIndex));
         prevChild.receiveComponent(nextChild, transaction);
@@ -125,15 +129,15 @@ class ContainerComponent extends rx.core.Component {
     trace('ContainerComponent.unmountChildren');
   }
 
-  public function moveChild(child: rx.core.Component, toIndex: Int, lastIndex: Int) {
+  public function moveChild(child: Component, toIndex: Int, lastIndex: Int) {
     //trace('ContainerComponent.moveChild');
   }
 
-  public function createChild(child: rx.core.Component, mountImage: String) {
+  public function createChild(child: Component, mountImage: String) {
     enqueueMarkup(this.rootNodeId, mountImage, child.mountIndex);
   }
 
-  public function removeChild(child: rx.core.Component) {
+  public function removeChild(child: Component) {
     trace('ContainerComponent.removeChild');
   }
 
@@ -141,7 +145,7 @@ class ContainerComponent extends rx.core.Component {
     trace('ContainerComponent.setTextContent');
   }
 
-  public function mountChildByNameAtIndex(child: rx.core.Component, name: String, index: Int, transaction: rx.browser.ReconcileTransaction) {
+  public function mountChildByNameAtIndex(child: Component, name: String, index: Int, transaction: ReconcileTransaction) {
 
     var rootId = this.rootNodeId + name;
     var mountImage = child.mountComponent(
@@ -151,12 +155,12 @@ class ContainerComponent extends rx.core.Component {
     );
     child.mountIndex = index;
     this.createChild(child, mountImage);
-    if(renderedChildren == null) this.renderedChildren = new Map<String, rx.core.Component>();
+    if(renderedChildren == null) this.renderedChildren = new Map<String, Component>();
     renderedChildren.set(name, child);
 
   }
 
-  public function unmountChildByName(child: rx.core.Component, name: String) {
+  public function unmountChildByName(child: Component, name: String) {
     // TODO: When is this not true?
     // if (ReactComponent.isValidComponent(child)) {
     //   this.removeChild(child);
@@ -164,7 +168,7 @@ class ContainerComponent extends rx.core.Component {
     //   child.unmountComponent();
     //   delete this._renderedChildren[name];
     // }
-    trace('unmountChildByName(..., $name)');  
+    trace('unmountChildByName(..., $name)');
   }
 
 

@@ -1,13 +1,15 @@
 package ;
 
 import rx.browser.ui.DOM;
+import rx.core.Component;
+import rx.core.CompositeComponent;
 
 class RootState {
   public var splitter: String = ' ';
   public function new(splitter) { this.splitter = splitter; };
 }
 
-class MyComponent extends rx.core.CompositeComponent<RootState> {
+class MyComponent extends CompositeComponent<RootState> {
 
   var c = 0;
   public override function getInitialState() {
@@ -37,7 +39,7 @@ class MyComponent extends rx.core.CompositeComponent<RootState> {
     }
   }
 
-  public override function render():rx.core.Component {
+  public override function render() {
     return DOM.el('div', [for(i in 0...c) DOM.el('div', [
         DOM.text('Hello '),
         DOM.text(this.state.splitter),

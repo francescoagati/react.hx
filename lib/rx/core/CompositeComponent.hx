@@ -1,5 +1,12 @@
 package rx.core;
 
+import rx.core.Component;
+import rx.core.Descriptor;
+import rx.core.Context;
+import rx.core.Owner;
+
+import rx.browser.ReconcileTransaction;
+
 enum CompositeLifecycle {
   Mounting;
   Unmounting;
@@ -7,19 +14,19 @@ enum CompositeLifecycle {
   ReceivingState;
 }
 
-class CompositeComponent<T> extends rx.core.Component {
+class CompositeComponent<T> extends Component {
 
   private var compositeLifecycleState: CompositeLifecycle;
 
   private var state: T;
   private var pendingState: T;
   private var pendingForceUpdate: Bool;
-  private var defaultProps: rx.core.Descriptor.Props;
-  private var pendingContext: rx.core.Context;
-  private var renderedComponent: rx.core.Component;
+  private var defaultProps: Descriptor.Props;
+  private var pendingContext: Context;
+  private var renderedComponent: Component;
 
   public function new() {
-    super(new rx.core.Descriptor(null, null));
+    super(new Descriptor(null, null));
 
     state = null;
     pendingState = null;
@@ -36,7 +43,7 @@ class CompositeComponent<T> extends rx.core.Component {
     return null;
   }
 
-  public function getDefaultProps():rx.core.Descriptor.Props {
+  public function getDefaultProps():Descriptor.Props {
     return null;
   }
 
@@ -52,26 +59,26 @@ class CompositeComponent<T> extends rx.core.Component {
     return true;
   }
 
-  public function render():rx.core.Component { return null; }
+  public function render():Component { return null; }
 
-  private function renderValidatedComponent():rx.core.Component {
+  private function renderValidatedComponent():Component {
 
     var renderedComponent = null;
     var previousContext = Context.current;
-    // Context.current = 
-    rx.core.Owner.current = this;
+    // Context.current =
+    Owner.current = this;
     try {
       renderedComponent = this.render();
     } catch(e:js.Error) {
       trace(e.stack);
     }
     // Context.current = prev;
-    rx.core.Owner.current = null;
+    Owner.current = null;
 
     return renderedComponent;
   }
 
-  public override function mountComponent(rootId: String, transaction: rx.browser.ReconcileTransaction, mountDepth:Int):String {
+  public override function mountComponent(rootId: String, transaction: ReconcileTransaction, mountDepth:Int):String {
 
     super.mountComponent(rootId, transaction, mountDepth);
     compositeLifecycleState = CompositeLifecycle.Mounting;
@@ -109,14 +116,14 @@ class CompositeComponent<T> extends rx.core.Component {
     rx.core.Updates.enqueueUpdate(this, callback);
   }
 
-  public override function receiveComponent(nextComponent:rx.core.Component, transaction:rx.browser.ReconcileTransaction) {
+  public override function receiveComponent(nextComponent:Component, transaction:ReconcileTransaction) {
     if (nextComponent.props == this.props && nextComponent.owner != null) {
       // Since props and context are immutable after the component is
       // mounted, we can do a cheap identity compare here to determine
       // if this is a superfluous reconcile.
       return;
     }
-    
+
     super.receiveComponent(
       nextComponent,
       transaction
@@ -124,22 +131,22 @@ class CompositeComponent<T> extends rx.core.Component {
   }
 
   public override function updateComponent(
-    transaction:rx.browser.ReconcileTransaction, 
-    prevProps:rx.core.Descriptor.Props, 
-    prevOwner: rx.core.Owner, 
-    ?prevState: Dynamic, 
+    transaction:ReconcileTransaction,
+    prevProps:Descriptor.Props,
+    prevOwner: Owner,
+    ?prevState: Dynamic,
     ?prevContext: Dynamic,
-    ?prevChildren: Array<rx.core.Component>) {
+    ?prevChildren: Array<Component>) {
 
     super.updateComponent(transaction, prevProps, prevOwner);
 
     var prevComponent = renderedComponent;
     var nextComponent = renderValidatedComponent();
 
-    if (rx.core.Component.shouldUpdate(prevComponent, nextComponent)) {
+    if (Component.shouldUpdate(prevComponent, nextComponent)) {
       prevComponent.receiveComponent(nextComponent, transaction);
     } else {
-      
+
       var thisId = rootNodeId;
       var prevComponentId = prevComponent.rootNodeId;
       prevComponent.unmountComponent();
@@ -151,11 +158,11 @@ class CompositeComponent<T> extends rx.core.Component {
   }
 
   public function _performComponentUpdate(
-    nextProps: rx.core.Descriptor.Props,
-    nextOwner: rx.core.Owner,
+    nextProps: Descriptor.Props,
+    nextOwner: Owner,
     nextState: T,
-    nextContext: rx.core.Context,
-    transaction: rx.browser.ReconcileTransaction) {
+    nextContext: Context,
+    transaction: ReconcileTransaction) {
 
     this.componentWillUpdate(nextProps, nextState, nextContext);
 
@@ -174,15 +181,15 @@ class CompositeComponent<T> extends rx.core.Component {
 
   }
 
-  public function processProps(pendingProps: rx.core.Descriptor.Props):rx.core.Descriptor.Props {
+  public function processProps(pendingProps: Descriptor.Props):Descriptor.Props {
     return pendingProps;
   }
 
-  public function processContext(pendingContext: rx.core.Context):rx.core.Context {
+  public function processContext(pendingContext: Context):Context {
     return pendingContext;
   }
 
-  public override function _performUpdateIfNecessary(transaction: rx.browser.ReconcileTransaction) {
+  public override function _performUpdateIfNecessary(transaction: ReconcileTransaction) {
     if (this.pendingProps == null &&
         this.pendingState == null &&
         this.pendingContext == null &&
@@ -203,7 +210,7 @@ class CompositeComponent<T> extends rx.core.Component {
       this.compositeLifecycleState = CompositeLifecycle.ReceivingProps;
       this.componentWillReceiveProps(nextProps, nextContext);
     }
-    
+
 
     compositeLifecycleState = CompositeLifecycle.ReceivingState;
 
@@ -216,11 +223,11 @@ class CompositeComponent<T> extends rx.core.Component {
       if (pendingForceUpdate || this.shouldComponentUpdate(nextProps, nextState, nextContext)) {
 
         pendingForceUpdate = false;
-        this._performComponentUpdate( 
-          nextProps, 
-          nextOwner, 
-          nextState, 
-          nextContext, 
+        this._performComponentUpdate(
+          nextProps,
+          nextOwner,
+          nextState,
+          nextContext,
           transaction);
       } else {
         props = nextProps;
@@ -239,8 +246,8 @@ class CompositeComponent<T> extends rx.core.Component {
     var _state = compositeLifecycleState;
     if (_state == CompositeLifecycle.Mounting || _state == CompositeLifecycle.ReceivingProps) {
       return;
-    } 
+    }
     return super.performUpdateIfNecessary();
   }
-  
+
 }

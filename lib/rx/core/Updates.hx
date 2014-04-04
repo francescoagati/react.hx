@@ -1,11 +1,13 @@
 package rx.core;
 
-class Updates {
-  
-  public static var dirtyComponents: Array<rx.core.Component> = new Array<rx.core.Component>();
+import rx.core.Component;
 
-  public static function enqueueUpdate(component: rx.core.Component, callback: Dynamic):Void {
-    
+class Updates {
+
+  public static var dirtyComponents: Array<Component> = new Array<Component>();
+
+  public static function enqueueUpdate(component: Component, callback: Dynamic):Void {
+
     if (!rx.core.BatchingStrategy.isBatchingUpdates) {
       component.performUpdateIfNecessary();
       if (callback != null) Reflect.callMethod(component, callback, []);
@@ -24,12 +26,12 @@ class Updates {
   }
 
   public static function clearDirtyComponents() {
-    dirtyComponents = new Array<rx.core.Component>();
+    dirtyComponents = new Array<Component>();
   }
 
 
   public static function runBatchedUpdates() {
-    dirtyComponents.sort(function (c1: rx.core.Component, c2: rx.core.Component) {
+    dirtyComponents.sort(function (c1: Component, c2: Component) {
       return c1.mountDepth - c2.mountDepth;
     });
 

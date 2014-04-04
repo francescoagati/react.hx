@@ -1,6 +1,8 @@
 package rx.core;
 
-class BatchingTransaction extends rx.utils.Transaction {
+import rx.utils.Transaction;
+
+class BatchingTransaction extends Transaction {
 
   public function new() {
     this.reinitializeTransaction();

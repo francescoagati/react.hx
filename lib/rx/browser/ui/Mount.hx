@@ -1,10 +1,16 @@
 package rx.browser.ui;
 
+import rx.core.Component;
+import rx.core.InstanceHandles;
+
+import rx.browser.ui.dom.Property in DomProperty;
+import rx.browser.ui.dom.Node in DomNode;
+
 class Mount {
 
   public static var totalInstantiationTime: Int = 0;
   public static var totalInjectionTime: Int = 0;
-  public static var ATTR_NAME = rx.browser.ui.dom.Property.ID_ATTRIBUTE_NAME;
+  public static var ATTR_NAME = DomProperty.ID_ATTRIBUTE_NAME;
 
   public static function scrollMonitor(container: js.html.Element, renderCallback: Dynamic) {
     renderCallback();
@@ -60,9 +66,9 @@ class Mount {
   public static function isValid(node: js.html.Node, id: String):Bool {
     if (node != null) {
       if (internalGetId(node) != id) throw 'Mount: unexpected modification of `$ATTR_NAME`';
-    
+
       var container = findReactContainerForId(id);
-      if (container != null && rx.browser.ui.dom.Node.containsNode(container, node)) {
+      if (container != null && DomNode.containsNode(container, node)) {
         return true;
       }
     }
@@ -102,7 +108,7 @@ class Mount {
         if (childId != null) {
           if (targetId == childId) {
             targetChild = child;
-          } else if (rx.core.InstanceHandles.isAncestorIdOf(childId, targetId)) {
+          } else if (InstanceHandles.isAncestorIdOf(childId, targetId)) {
             firstChildren.splice(0, firstChildren.length);
             childIndex = 0;
             firstChildren.push(child.firstChild);
@@ -141,7 +147,7 @@ class Mount {
   static var deepestNodeSoFar:js.html.Node = null;
   public static function findDeepestCachedAncestor(targetId: String) {
     deepestNodeSoFar = null;
-    rx.core.InstanceHandles.traverseAncestors(targetId, findDeepestCachedAncestorImpl);
+    InstanceHandles.traverseAncestors(targetId, findDeepestCachedAncestorImpl);
 
     var foundNode = deepestNodeSoFar;
     deepestNodeSoFar = null;
@@ -149,19 +155,19 @@ class Mount {
   }
 
   public static function findReactContainerForId(id: String):js.html.Node {
-    var reactRootId = rx.core.InstanceHandles.getReactRootIdFromNodeId(id);
+    var reactRootId = InstanceHandles.getReactRootIdFromNodeId(id);
     var container = containersByReactRootId.get(reactRootId);
     return container;
   }
 
-  public static function getInstanceByContainer(container: js.html.Element):rx.core.Component {
+  public static function getInstanceByContainer(container: js.html.Element):Component {
     var id:String = getReactRootId(container);
     return instancesByReactRootId.get(id);
   }
 
-  public static function shouldUpdateReactComponent(prev: rx.core.Component, next: rx.core.Component):Bool {
+  public static function shouldUpdateReactComponent(prev: Component, next: Component):Bool {
     if (
-      (prev != null && next != null) && 
+      (prev != null && next != null) &&
       (Type.getClass(prev) == Type.getClass(next)) &&
       (prev.descriptor.props.get('key') == next.descriptor.props.get('key')) &&
       (prev.owner == next.owner)) {
@@ -170,7 +176,7 @@ class Mount {
     return false;
   }
 
-  public static function updateRootComponent(prev: rx.core.Component, next: rx.core.Component, container: js.html.Element, callback:Dynamic):rx.core.Component {
+  public static function updateRootComponent(prev: Component, next: Component, container: js.html.Element, callback:Dynamic):Component {
     var nextProps = next.props;
     scrollMonitor(container, function () {
       prev.replaceProps(nextProps, callback);
@@ -187,23 +193,23 @@ class Mount {
     var reactRootId = getReactRootId(container);
     if (reactRootId != null) {
       // If one exists, make sure it is a valid "reactRoot" ID.
-      reactRootId = rx.core.InstanceHandles.getReactRootIdFromNodeId(reactRootId);
+      reactRootId = InstanceHandles.getReactRootIdFromNodeId(reactRootId);
     }
     if (reactRootId == null) {
       // No valid "reactRoot" ID found, create one.
-      reactRootId = rx.core.InstanceHandles.createReactRootId();
+      reactRootId = InstanceHandles.createReactRootId();
     }
     containersByReactRootId.set(reactRootId, container);
     return reactRootId;
   }
 
-  public static function registerComponent(component: rx.core.Component, container:js.html.Element):String {
+  public static function registerComponent(component: Component, container:js.html.Element):String {
     var reactRootId = registerContainer(container);
     instancesByReactRootId.set(reactRootId, component);
-    return reactRootId; 
+    return reactRootId;
   }
 
-  public static function renderNewRootComponent(component: rx.core.Component, container: js.html.Element, shouldReuseMarkup: Bool):rx.core.Component {
+  public static function renderNewRootComponent(component: Component, container: js.html.Element, shouldReuseMarkup: Bool):Component {
     var reactRootId = registerComponent(component, container);
     component.mountComponentIntoNode(reactRootId, container, shouldReuseMarkup);
     return component;
@@ -219,8 +225,8 @@ class Mount {
     return (id != null) ? id.charAt(0) == SEPARATOR : false;
   }
 
-  public static var instancesByReactRootId = new Map<String, rx.core.Component>();
-  public static function renderComponent(component: rx.core.Component, container: js.html.Element, ?callback: Dynamic) {
+  public static var instancesByReactRootId = new Map<String, Component>();
+  public static function renderComponent(component: Component, container: js.html.Element, ?callback: Dynamic) {
     var prevComponent = getInstanceByContainer(container);
     if (prevComponent != null) {
       var prevDescriptor = prevComponent.descriptor;
@@ -238,8 +244,8 @@ class Mount {
 
     var component = renderNewRootComponent(component, container, shouldReuseMarkup);
     return component;
-  } 
-   
+  }
+
   /*
   static var instancesByReactRootId: Map<String, Component> = new Map<String,Component>();
 

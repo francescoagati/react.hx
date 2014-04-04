@@ -1,5 +1,7 @@
 package rx.core;
 
+import rx.core.Component;
+
 typedef Props = Map<String, Dynamic>;
 
 class Descriptor {
@@ -9,13 +11,13 @@ class Descriptor {
     return newDescriptor;
   }
 
-  public var children: Array<rx.core.Component>;
+  public var children: Array<Component>;
   public var props: Props;
 
-  public function new(?children: Array<rx.core.Component> = null, ?props: Props = null) {
+  public function new(?children: Array<Component> = null, ?props: Props = null) {
     if (children != null)
       this.children = children;
-    else this.children = new Array<rx.core.Component>();
+    else this.children = new Array<Component>();
 
     if (props != null)
       this.props = props;

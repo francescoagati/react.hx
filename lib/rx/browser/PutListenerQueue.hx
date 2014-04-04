@@ -1,5 +1,7 @@
 package rx.browser;
 
+import rx.utils.PooledClass;
+
 typedef Listener = {
   rootNodeId: String,
   propKey: String,
@@ -8,7 +10,7 @@ typedef Listener = {
 
 class PutListenerQueue {
 
-  public static var pool = new rx.utils.PooledClass<PutListenerQueue>();
+  public static var pool = new PooledClass<PutListenerQueue>();
 
   var listenersToPut: Array<Listener>;
   public function new(_) {
@@ -29,7 +31,7 @@ class PutListenerQueue {
         listener.rootNodeId,
         listener.propKey,
         listener.propValue
-      ); 
+      );
     }
   }
 
