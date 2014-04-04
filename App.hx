@@ -8,27 +8,16 @@ class RootState {
 }
 
 class MyComponent extends rx.core.CompositeComponent<RootState> {
-  
-  var start = Date.now().getTime();
 
+  var c = 0;  
   public override function getInitialState() {
-    return new RootState(' ');
+    return new RootState(Std.string(c));
   }
 
-  var c = 0;
   public override function componentDidMount() {
     js.Browser.window.setInterval(function() {
       this.setState(new RootState(Std.string(c++)));
     }, 1000);
-  }
-
-  public override function componentWillUpdate(props, state, context) {
-    // trace('Will update', state);
-  }
-
-  public override function componentDidUpdate(props, state, context) {
-    // trace(Date.now().getTime() - start);
-    // start = Date.now().getTime();
   }
 
   public override function render():rx.core.Component {
