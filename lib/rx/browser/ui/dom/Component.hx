@@ -1,6 +1,13 @@
 package rx.browser.ui.dom;
 
-class Component extends rx.core.ContainerComponent {
+import rx.core.Component;
+import rx.core.ContainerComponent;
+import rx.core.Descriptor.Props;
+import rx.core.Owner;
+
+import rx.browser.ReconcileTransaction;
+
+class Component extends ContainerComponent {
   var tagOpen: String;
   var tagClose: String;
   var omitClose: Bool;
@@ -10,7 +17,7 @@ class Component extends rx.core.ContainerComponent {
     this.tagClose = omitClose ? '' : '</$tagName>';
   }
 
-  public override function mountComponent(rootId: String, transaction: rx.browser.ReconcileTransaction, mountDepth: Int):String {
+  public override function mountComponent(rootId: String, transaction: ReconcileTransaction, mountDepth: Int):String {
     super.mountComponent(rootId, transaction, mountDepth);
     return (
       createOpenTagMarkupAndPutListeners(transaction) +
@@ -20,7 +27,7 @@ class Component extends rx.core.ContainerComponent {
   }
 
   private static var ELEMENT_NODE_TYPE = 1;
-  private function putListener(id: String, registrationName: String, listener: Dynamic, transaction: rx.browser.ReconcileTransaction) {
+  private function putListener(id: String, registrationName: String, listener: Dynamic, transaction: ReconcileTransaction) {
     var container = rx.browser.ui.Mount.findReactContainerForId(id);
     if (container != null) {
       var doc = container.nodeType == ELEMENT_NODE_TYPE ?
@@ -32,12 +39,12 @@ class Component extends rx.core.ContainerComponent {
     transaction.getPutListenerQueue().enqueuePutListener(id, registrationName, listener);
   }
 
-  public function createOpenTagMarkupAndPutListeners(transaction: rx.browser.ReconcileTransaction):String {
+  public function createOpenTagMarkupAndPutListeners(transaction: ReconcileTransaction):String {
     var props = this.props;
     var ret = this.tagOpen;
     if (props != null) {
       for (propKey in props.keys()) {
-        
+
         var propValue = props.get(propKey);
 
         if (propValue == null) {
@@ -54,7 +61,7 @@ class Component extends rx.core.ContainerComponent {
           //   propValue = CSSPropertyOperations.createMarkupForStyles(propValue);
           // }
           var markup = PropertyOperations.createMarkupForProperty(propKey, propValue);
-          if (markup != '') {
+          if (markup != '' && markup != null) {
             ret += ' ' + markup;
           }
         }
@@ -69,29 +76,29 @@ class Component extends rx.core.ContainerComponent {
     return ret + ' ' + markupForId + '>';
   }
 
-  public function createContentMarkup(transaction: rx.browser.ReconcileTransaction) {
+  public function createContentMarkup(transaction: ReconcileTransaction) {
     var children = this.props.get('children');
     var mountImages = this.mountChildren(children, transaction);
     return mountImages.join('');
   }
 
   public override function updateComponent(
-    transaction: rx.browser.ReconcileTransaction, 
-    props: rx.core.Descriptor.Props, 
-    owner: rx.core.Owner,
-    ?prevProps: rx.core.Descriptor.Props,
-    ?prevOwner: rx.core.Owner,
+    transaction: ReconcileTransaction,
+    props: Props,
+    owner: Owner,
+    ?prevProps: Props,
+    ?prevOwner: Owner,
     ?prevChildren: Array<rx.core.Component>) {
-  
+
     super.updateComponent(transaction, props, owner);
     _updateDOMProperties(props, transaction);
     _updateDOMChildren(props, transaction);
 
   }
 
-  public function _updateDOMProperties(lastProps: rx.core.Descriptor.Props, transaction: rx.browser.ReconcileTransaction) {
+  public function _updateDOMProperties(lastProps: Props, transaction: ReconcileTransaction) {
     var nextProps = this.props;
-    
+
     var styleName = null;
     var styleUpdates = null;
 
@@ -105,17 +112,17 @@ class Component extends rx.core.ContainerComponent {
     }
   }
 
-  public function _updateDOMChildren(lastProps: rx.core.Descriptor.Props, transaction: rx.browser.ReconcileTransaction) {
+  public function _updateDOMChildren(lastProps: Props, transaction: ReconcileTransaction) {
     var nextProps = this.props;
     var lastChildren = lastProps.get('children');
     var nextChildren = nextProps.get('children');
-    
+
     if (lastChildren != null && nextChildren == null) {
       this.updateChildren(null, transaction);
     } else if (nextChildren != null) {
       this.updateChildren(nextChildren, transaction);
     }
-    
-    
+
+
   }
 }

@@ -19,33 +19,35 @@ class MyComponent extends CompositeComponent<RootState> {
   var time = Date.now().getTime();
   var interval: Int;
   public override function componentDidMount() {
-    interval = js.Browser.window.setInterval(function() {
-      this.setState(new RootState(Std.string(c++)));
-    }, 16);
+    // interval = js.Browser.window.setInterval(function() {
+    //   this.setState(new RootState(Std.string(c++)));
+    // }, 16);
   }
 
   public override function componentWillUpdate(props, state, context) {
-    time = Date.now().getTime();
+    // time = Date.now().getTime();
   }
 
   var fail: Int = 0;
   public override function componentDidUpdate(props, state, context) {
-    var diff = Date.now().getTime() - time;
-    if (diff > 16) {
-      fail++;
-      trace('Whoops: $c - $diff');
-      if (fail > 5)
-        js.Browser.window.clearInterval(interval);
-    }
+    // var diff = Date.now().getTime() - time;
+    // if (diff > 16) {
+    //   fail++;
+    //   trace('Whoops: $c - $diff');
+    //   if (fail > 5)
+    //     js.Browser.window.clearInterval(interval);
+    // }
   }
 
   public override function render() {
-    return DOM.el('div', [for(i in 0...c) DOM.el('div', [
-        DOM.text('Hello '),
+    return DOM.el('div', /*[for(i in 0...c) DOM.el('div', */[
+        DOM.text('Hello'),
         DOM.text(this.state.splitter),
         DOM.text(' World')
-      ])
-    ]);
+      ], [
+        'data-attr'=>'Hello'
+      ]/*)*/
+    );
   }
 
 }

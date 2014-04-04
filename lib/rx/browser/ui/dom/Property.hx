@@ -155,7 +155,7 @@ class Check {
       strokeWidth: 'stroke-width',
       viewBox: 'viewBox'
     };
-    
+
     DOMPropertyNames = {
       autoCapitalize: 'autocapitalize',
       autoComplete: 'autocomplete',
@@ -176,7 +176,7 @@ class Property {
   public static var ID_ATTRIBUTE_NAME = 'data-reactid';
 
   public static function isStandardName(name: String) {
-    return true;
+    return Reflect.field(Check.Properties, name) != null;
   }
 
   public static function getMutationMethod(name: String): Dynamic {
@@ -188,6 +188,7 @@ class Property {
   }
 
   public static function getAttributeName(name: String): String {
+    trace('getAttributeName($name)');
     return Reflect.field(Check.DOMAttributeNames,name);
   }
 
@@ -200,15 +201,15 @@ class Property {
   }
 
   public static function isCustomAttribute(name: String): Bool {
-    return name.indexOf('data-') >= 0 || name.indexOf('area-') >= 0;
+    return name.indexOf('data-') == 0 || name.indexOf('area-') == 0;
   }
 
   public static function hasBooleanValue(name: String): Bool {
-    return true;
+    return cast (Reflect.field(Check.MUST_USE_ATTRIBUTE, name) & Check.HAS_BOOLEAN_VALUE);
   }
 
   public static function hasPositiveNumbericValue(name: String): Bool {
-    return true;
+    return cast (Reflect.field(Check.MUST_USE_ATTRIBUTE, name) & Check.HAS_POSITIVE_NUMERIC_VALUE);
   }
 
   static var defaultValueCache = new Map<String, Map<String, Dynamic>>();
@@ -226,5 +227,5 @@ class Property {
     return nodeDefaults.get(prop);
   }
 
-  
+
 }
