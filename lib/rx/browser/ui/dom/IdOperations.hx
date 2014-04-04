@@ -47,9 +47,9 @@ class IdOperations {
     Danger.dangerouslyReplaceNodeWithMarkup(node, markup);
   }
 
-  public static function dangerouslyProcessChildrenUpdates(updates: Array<js.html.Node>, markup: Array<String>) {
+  public static function dangerouslyProcessChildrenUpdates(updates: Array<Dynamic>, markup: Array<String>) {
     for (update in updates) {
-      untyped update.parentNode = Mount.getNode(update.parentId);
+      update.parentNode = Mount.getNode(update.parentId);
     }
     ChildrenOperations.processUpdates(updates, markup);
   }

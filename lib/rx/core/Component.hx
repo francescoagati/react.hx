@@ -8,7 +8,17 @@ enum Lifecycle {
 class Component extends rx.core.Owner {
   
   public static function shouldUpdate(prevComponent, nextComponent):Bool {
-    return true;
+    if (prevComponent != null && 
+        nextComponent != null && 
+        prevComponent.props.get('key') == nextComponent.props.get('key') != null) {
+
+      if (prevComponent.owner == nextComponent.owner) {
+        return true;
+      }
+
+    }
+    
+    return false;
   }
 
   public var props: rx.core.Descriptor.Props;

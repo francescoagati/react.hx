@@ -51,7 +51,7 @@ class ChildrenOperations {
 
     var renderedMarkup = Danger.dangerouslyRenderMarkup(markupList);
 
-    if (updatedChildren.length > 0) {
+    if (updatedChildren != null && updatedChildren.length > 0) {
       for (child in updatedChildren) {
         child.parentNode.removeChild(child);
       }

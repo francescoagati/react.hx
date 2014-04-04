@@ -17,10 +17,9 @@ class MyComponent extends rx.core.CompositeComponent<RootState> {
 
   var c = 0;
   public override function componentDidMount() {
-    js.Browser.window.setInterval(function () {
+    js.Browser.window.setInterval(function() {
       this.setState(new RootState(Std.string(c++)));
-    }, 0);
-    
+    }, 1000);
   }
 
   public override function componentWillUpdate(props, state, context) {
@@ -34,11 +33,11 @@ class MyComponent extends rx.core.CompositeComponent<RootState> {
 
   public override function render():rx.core.Component {
     return DOM.el('div', [
-      DOM.el('div', [
-        DOM.text('Hello'),
+      DOM.el('div', [for(i in 0...c) DOM.el('div', [
+        DOM.text('Hello '),
         DOM.text(this.state.splitter),
-        DOM.text('World')
-      ])
+        DOM.text(' World')
+      ])])
     ]);
   }
 }
