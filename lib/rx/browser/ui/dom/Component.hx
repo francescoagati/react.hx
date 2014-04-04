@@ -2,10 +2,13 @@ package rx.browser.ui.dom;
 
 import rx.core.Component;
 import rx.core.ContainerComponent;
-import rx.core.Descriptor.Props;
+import rx.core.Props;
 import rx.core.Owner;
 
 import rx.browser.ReconcileTransaction;
+
+import rx.browser.ui.dom.Property in DomProperty;
+import rx.browser.ui.dom.IdOperations;
 
 class Component extends ContainerComponent {
   var tagOpen: String;
@@ -113,10 +116,10 @@ class Component extends ContainerComponent {
       } else if (rx.browser.EventEmitter.registrationNameModules.get(propKey)) {
 
       } else if (
-        rx.browser.ui.dom.Property.isStandardName(propKey) ||
-        rx.browser.ui.dom.Property.isCustomAttribute(propKey)
+        DomProperty.isStandardName(propKey) ||
+        DomProperty.isCustomAttribute(propKey)
       ) {
-        rx.browser.ui.dom.IdOperations.deletePropertyById(this.rootNodeId, propKey);
+        IdOperations.deletePropertyById(this.rootNodeId, propKey);
       }
     }
 
@@ -130,10 +133,10 @@ class Component extends ContainerComponent {
       } else if (rx.browser.EventEmitter.registrationNameModules.get(propKey)) {
 
       } else if (
-        rx.browser.ui.dom.Property.isStandardName(propKey) ||
-        rx.browser.ui.dom.Property.isCustomAttribute(propKey)
+        DomProperty.isStandardName(propKey) ||
+        DomProperty.isCustomAttribute(propKey)
       ) {
-        rx.browser.ui.dom.IdOperations.updatePropertyById(this.rootNodeId, propKey, nextProp);
+        IdOperations.updatePropertyById(this.rootNodeId, propKey, nextProp);
       }
     }
   }

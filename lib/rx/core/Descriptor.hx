@@ -1,8 +1,9 @@
 package rx.core;
 
 import rx.core.Component;
+import rx.core.Props;
 
-typedef Props = Map<String, Dynamic>;
+// typedef Props = Map<String, Dynamic>;
 
 class Descriptor {
   public static function cloneAndReplaceProps(oldDescriptor: Descriptor, newProps: Props) {
@@ -21,7 +22,7 @@ class Descriptor {
 
     if (props != null)
       this.props = props;
-    else this.props = new Map<String, Dynamic>();
+    else this.props = {};
 
     this.props.set('children', children);
   }

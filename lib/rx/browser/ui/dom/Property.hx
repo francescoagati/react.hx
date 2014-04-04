@@ -1,11 +1,11 @@
 package rx.browser.ui.dom;
 
 class Check {
-  public static var MUST_USE_ATTRIBUTE = 0x1;
-  public static var MUST_USE_PROPERTY = 0x2;
-  public static var HAS_BOOLEAN_VALUE = 0x4;
-  public static var HAS_SIDE_EFFECTS = 0x8;
-  public static var HAS_POSITIVE_NUMERIC_VALUE = 0x10;
+  public static inline var MUST_USE_ATTRIBUTE = 0x1;
+  public static inline var MUST_USE_PROPERTY = 0x2;
+  public static inline var HAS_BOOLEAN_VALUE = 0x4;
+  public static inline var HAS_SIDE_EFFECTS = 0x8;
+  public static inline var HAS_POSITIVE_NUMERIC_VALUE = 0x10;
 
   public static var Properties: Dynamic;
   public static var DOMAttributeNames: Dynamic;
@@ -173,7 +173,7 @@ class Check {
 
 class Property {
 
-  public static var ID_ATTRIBUTE_NAME = 'data-reactid';
+  public static inline var ID_ATTRIBUTE_NAME = 'data-reactid';
 
   public static function isStandardName(name: String) {
     return Reflect.field(Check.Properties, name) != null;
@@ -188,7 +188,6 @@ class Property {
   }
 
   public static function getAttributeName(name: String): String {
-    trace('getAttributeName($name)');
     return Reflect.field(Check.DOMAttributeNames,name);
   }
 

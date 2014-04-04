@@ -4,22 +4,19 @@ import rx.browser.ui.dom.Property;
 
 class PropertyOperations {
 
-  public static inline function escapeTextForBrowser(text:String):String {
-    trace('escapeTextForBrowser($text)');
+  public static function escapeTextForBrowser(text:String):String {
     return text;
   }
 
-  public static inline function processAttributeNameAndPrefix(name:String):String {
-    trace('processAttributeNameAndPrefix($name)');
+  public static function processAttributeNameAndPrefix(name:String):String {
     return escapeTextForBrowser(name) + '="';
   }
 
-  public static inline function createMarkupForId(id:String):String {
+  public static function createMarkupForId(id:String):String {
     return processAttributeNameAndPrefix(rx.browser.ui.dom.Property.ID_ATTRIBUTE_NAME) + escapeTextForBrowser(id) + '"';
   }
 
   public static function createMarkupForProperty(name: String, value:String):String {
-    trace('createMarkupForProperty($name, $value)');
     if (Property.isStandardName(name)) {
       if (shouldIgnoreValue(name, value)) {
         return '';
@@ -42,14 +39,12 @@ class PropertyOperations {
   }
 
   private static function shouldIgnoreValue(name: String, value: Dynamic) {
-    trace('shouldIgnoreValue($name, $value)');
     return value == null ||
       (Property.hasBooleanValue(name) && !value) ||
       (Property.hasPositiveNumbericValue(name) && (Math.isNaN(value) || value < 1));
   }
 
-  public static function setValueForProperty(node: js.html.Element, name: String, value: Dynamic) {
-    trace('setValueForProperty($name, $value)');
+  public static inline function setValueForProperty(node: js.html.Element, name: String, value: Dynamic) {
     if (Property.isStandardName(name)) {
       var mutationMethod = Property.getMutationMethod(name);
       if (mutationMethod != null) {
@@ -75,10 +70,10 @@ class PropertyOperations {
 
   public static function deleteValueForProperty(node: js.html.Element, name: String) {
     if (Property.isStandardName(name)) {
-      var mutationMethod = Property.getMutationMethod(name);
-      if (mutationMethod != null) {
-        mutationMethod(node, null);
-      } else if (Property.mustUseAttributeName(name)) {
+      // var mutationMethod = Property.getMutationMethod(name);
+      // if (mutationMethod != null) {
+      //   mutationMethod(node, null);
+      if (Property.mustUseAttributeName(name)) {
         node.removeAttribute(Property.getAttributeName(name));
       } else {
         var propName = Property.getAttributeName(name);
@@ -89,8 +84,6 @@ class PropertyOperations {
       }
     } else if (Property.isCustomAttribute(name)) {
       node.removeAttribute(name);
-    } else if (/*__DEV__*/false) {
-      throw 'warnUnknownProperty: $name';
     }
   }
 }

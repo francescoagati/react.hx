@@ -21,7 +21,7 @@ class CompositeComponent<T> extends Component {
   private var state: T;
   private var pendingState: T;
   private var pendingForceUpdate: Bool;
-  private var defaultProps: Descriptor.Props;
+  private var defaultProps: Props;
   private var pendingContext: Context;
   private var renderedComponent: Component;
 
@@ -43,7 +43,7 @@ class CompositeComponent<T> extends Component {
     return null;
   }
 
-  public function getDefaultProps():Descriptor.Props {
+  public function getDefaultProps():Props {
     return null;
   }
 
@@ -132,7 +132,7 @@ class CompositeComponent<T> extends Component {
 
   public override function updateComponent(
     transaction:ReconcileTransaction,
-    prevProps:Descriptor.Props,
+    prevProps:Props,
     prevOwner: Owner,
     ?prevState: Dynamic,
     ?prevContext: Dynamic,
@@ -158,7 +158,7 @@ class CompositeComponent<T> extends Component {
   }
 
   public function _performComponentUpdate(
-    nextProps: Descriptor.Props,
+    nextProps: Props,
     nextOwner: Owner,
     nextState: T,
     nextContext: Context,
@@ -181,7 +181,7 @@ class CompositeComponent<T> extends Component {
 
   }
 
-  public function processProps(pendingProps: Descriptor.Props):Descriptor.Props {
+  public function processProps(pendingProps: Props):Props {
     return pendingProps;
   }
 

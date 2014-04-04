@@ -70,7 +70,7 @@ class ContainerComponent extends Component {
   }
 
   public function _updateChildren(nextNestedChildren: Array<Component>, transaction: ReconcileTransaction) {
-    var nextChildren = FlattenChildren.flattenChildren(nextNestedChildren);
+    var nextChildren:Map<String, rx.core.Component> = FlattenChildren.flattenChildren(nextNestedChildren);
     var prevChildren = this.renderedChildren;
 
     if ((nextChildren == null) && (renderedChildren == null)) {
@@ -81,12 +81,12 @@ class ContainerComponent extends Component {
     var nextIndex = 0;
 
     for (name in nextChildren.keys()) {
-      var prevChild = null;
+      var prevChild:rx.core.Component = null;
       if (prevChildren != null) {
         prevChild = prevChildren.get(name);
       }
 
-      var nextChild = nextChildren.get(name);
+      var nextChild:rx.core.Component = nextChildren.get(name);
 
       if (Component.shouldUpdate(prevChild, nextChild)) {
         this.moveChild(prevChild, nextIndex, lastIndex);

@@ -2,7 +2,7 @@ package rx.browser.ui;
 
 import rx.core.Component;
 import rx.core.Descriptor;
-import rx.core.Descriptor.Props;
+import rx.core.Props;
 
 import rx.browser.ui.dom.Component in DomComponent;
 import rx.browser.ui.dom.components.Text in TextComponent;

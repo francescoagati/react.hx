@@ -1,6 +1,7 @@
 package rx.core;
 
 import rx.core.Descriptor;
+import rx.core.Props;
 import rx.browser.ReconcileTransaction;
 import rx.browser.ui.Environment;
 import rx.core.Owner;
@@ -12,7 +13,7 @@ enum Lifecycle {
 
 class Component extends Owner {
 
-  public static function shouldUpdate(prevComponent, nextComponent):Bool {
+  public static function shouldUpdate(prevComponent: Component, nextComponent:Component):Bool {
     if (prevComponent != null &&
         nextComponent != null &&
         prevComponent.props.get('key') == nextComponent.props.get('key') != null) {
@@ -26,14 +27,14 @@ class Component extends Owner {
     return false;
   }
 
-  public var props: Descriptor.Props;
+  public var props: Props;
   public var children: Array<Component>;
   public var context: rx.core.Context;
   public var owner: Owner;
   public var descriptor:Descriptor;
 
   var pendingDescriptor: Descriptor;
-  var pendingProps: Descriptor.Props;
+  var pendingProps: Props;
   var pendingOwner: Owner;
   var pendingChildren: Array<Component>;
   var lifecycleState: Lifecycle;
@@ -49,7 +50,7 @@ class Component extends Owner {
     return owner == this.owner;
   }
 
-  public function setProps(partialProps: Descriptor.Props, callback: Dynamic) {
+  public function setProps(partialProps: Props, callback: Dynamic) {
     var descr = pendingDescriptor;
     if (descr == null) descr = descriptor;
     replaceProps(
@@ -58,7 +59,7 @@ class Component extends Owner {
     );
   }
 
-  public function replaceProps(props:Descriptor.Props, callback: Dynamic) {
+  public function replaceProps(props:Props, callback: Dynamic) {
     if (!isMounted()) throw 'Can only update a mounted component';
     if (mountDepth != null) throw 'You called `setProps` or `replaceProps` on a component with a parent.';
 
@@ -139,7 +140,7 @@ class Component extends Owner {
 
   public function updateComponent(
     transaction:ReconcileTransaction,
-    prevProps:Descriptor.Props,
+    prevProps:Props,
     prevOwner: Owner,
     ?prevState: Dynamic,
     ?prevContext: Dynamic,
