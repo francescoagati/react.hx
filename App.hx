@@ -21,7 +21,7 @@ class MyComponent extends CompositeComponent<RootState> {
   public override function componentDidMount() {
     interval = js.Browser.window.setInterval(function() {
       c++;
-      this.setState(new RootState('Ahaha'));
+      this.setState(null);
     }, 0);
   }
 
@@ -34,16 +34,16 @@ class MyComponent extends CompositeComponent<RootState> {
     var diff = Date.now().getTime() - time;
     if (diff > 16) {
       fail++;
-      // trace('Whoops: $c - $diff');
       if (fail > 5)
         js.Browser.window.clearInterval(interval);
     }
   }
 
   public override function render() {
-    return DOM.el('div', [for(i in 0...c) DOM.el('div', [
-        DOM.text('Hello world ' + Std.string(this.c))
-      ])]
+    return DOM.el('div', [for(i in 0...c) //DOM.el('div', [
+        DOM.text('Hello world ' + Std.string(this.c) + ' ')
+      //])
+      ]
     );
   }
 
@@ -52,8 +52,6 @@ class MyComponent extends CompositeComponent<RootState> {
 class App {
   public static function main():Void {
 
-    // var props:rx.core.Props = { a: 1, b: 2, c: 3};
-    // for (i in props.keys()) trace(i);
     var d = js.Browser.document;
     d.addEventListener('DOMContentLoaded', function (event: js.html.Event) {
 
@@ -62,7 +60,6 @@ class App {
       rx.browser.ui.Mount.renderComponent(new MyComponent(), container);
       js.Browser.window.setTimeout(function () {
         var end = Date.now().getTime() - start;
-        // trace('Execution time: $end');
       }, 0);
 
     });

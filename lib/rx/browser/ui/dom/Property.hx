@@ -173,7 +173,7 @@ class Check {
 
 class Property {
 
-  public static inline var ID_ATTRIBUTE_NAME = 'data-reactid';
+  public static inline var ID_ATTRIBUTE_NAME = 'data-rxid';
 
   public static function isStandardName(name: String) {
     return Reflect.field(Check.Properties, name) != null;
