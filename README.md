@@ -9,22 +9,44 @@ React.hx - is a [React](https://github.com/facebook/react/) javascript framework
 ##Sample usage
 
 ```haxe
-import rx.browser.ui.DOM;
+package ;
 
-class SomeComponent extends rx.core.CompositeComponent<Dynamic> {
+import rx.browser.ui.DOM;
+import rx.core.CompositeComponent;
+
+class SwitchComponent extends CompositeComponent<Bool> {
+
+  public override function getInitialState() {
+    return true;
+  }
+
+  var interval: Int;
+
+  public override function componentDidMount() {
+    js.Browser.window.setInterval(function() {
+      this.setState(!this.state);
+    }, 500);
+  }
+
   public override function render() {
-    return DOM.el('div', [
-      DOM.text('Hello world')
+
+    return DOM.el('div', [ this.state ?
+      DOM.text('One') :
+      DOM.text('Two')
     ]);
   }
+
 }
 
 class App {
   public static function main():Void {
+
     var d = js.Browser.document;
     d.addEventListener('DOMContentLoaded', function (event: js.html.Event) {
+
       var container = d.getElementById('app');
-      rx.browser.ui.Mount.renderComponent(new SomeComponent(), container);
+      rx.browser.ui.Mount.renderComponent(new SwitchComponent(), container);
+
     });
   }
 }
