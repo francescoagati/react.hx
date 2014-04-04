@@ -34,7 +34,7 @@ class MyComponent extends CompositeComponent<RootState> {
     var diff = Date.now().getTime() - time;
     if (diff > 16) {
       fail++;
-      trace('Whoops: $c - $diff');
+      // trace('Whoops: $c - $diff');
       if (fail > 5)
         js.Browser.window.clearInterval(interval);
     }
@@ -62,7 +62,7 @@ class App {
       rx.browser.ui.Mount.renderComponent(new MyComponent(), container);
       js.Browser.window.setTimeout(function () {
         var end = Date.now().getTime() - start;
-        trace('Execution time: $end');
+        // trace('Execution time: $end');
       }, 0);
 
     });
