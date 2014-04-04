@@ -303,7 +303,7 @@ MyComponent.prototype = $extend(rx.core.CompositeComponent.prototype,{
 		var _g = this;
 		this.interval = window.setInterval(function() {
 			_g.c++;
-			_g.setState(new RootState("Ahaha"));
+			_g.setState(null);
 		},0);
 	}
 	,componentWillUpdate: function(props,state,context) {
@@ -313,7 +313,6 @@ MyComponent.prototype = $extend(rx.core.CompositeComponent.prototype,{
 		var diff = new Date().getTime() - this.time;
 		if(diff > 16) {
 			this.fail++;
-			console.log("Whoops: " + this.c + " - " + diff);
 			if(this.fail > 5) window.clearInterval(this.interval);
 		}
 	}
@@ -326,7 +325,7 @@ MyComponent.prototype = $extend(rx.core.CompositeComponent.prototype,{
 				var _g1 = $this.c;
 				while(_g2 < _g1) {
 					var i = _g2++;
-					_g.push(rx.browser.ui.DOM.el("div",[rx.browser.ui.DOM.text("Hello world " + Std.string($this.c))]));
+					_g.push(rx.browser.ui.DOM.text("Hello world " + Std.string($this.c) + " "));
 				}
 			}
 			$r = _g;
@@ -345,7 +344,6 @@ App.main = function() {
 		rx.browser.ui.Mount.renderComponent(new MyComponent(),container);
 		window.setTimeout(function() {
 			var end = new Date().getTime() - start;
-			console.log("Execution time: " + end);
 		},0);
 	});
 };
@@ -1476,7 +1474,7 @@ rx.browser.ui.dom.PropertyOperations.processAttributeNameAndPrefix = function(na
 	return rx.browser.ui.dom.PropertyOperations.escapeTextForBrowser(name) + "=\"";
 };
 rx.browser.ui.dom.PropertyOperations.createMarkupForId = function(id) {
-	return rx.browser.ui.dom.PropertyOperations.processAttributeNameAndPrefix("data-reactid") + rx.browser.ui.dom.PropertyOperations.escapeTextForBrowser(id) + "\"";
+	return rx.browser.ui.dom.PropertyOperations.processAttributeNameAndPrefix("data-rxid") + rx.browser.ui.dom.PropertyOperations.escapeTextForBrowser(id) + "\"";
 };
 rx.browser.ui.dom.PropertyOperations.createMarkupForProperty = function(name,value) {
 	if(rx.browser.ui.dom.Property.isStandardName(name)) {
@@ -1935,7 +1933,7 @@ rx.browser.ui.DOM.emptyDescriptor = new rx.core.Descriptor(null,null);
 rx.browser.ui.DOM.tagsMap = { a : false, b : false, button : false, form : false, div : false, span : false};
 rx.browser.ui.Mount.totalInstantiationTime = 0;
 rx.browser.ui.Mount.totalInjectionTime = 0;
-rx.browser.ui.Mount.ATTR_NAME = "data-reactid";
+rx.browser.ui.Mount.ATTR_NAME = "data-rxid";
 rx.browser.ui.Mount.DOC_NODE_TYPE = 9;
 rx.browser.ui.Mount.nodeCache = { };
 rx.browser.ui.Mount.findComponentRootReusableArray = new Array();
@@ -1954,7 +1952,7 @@ rx.browser.ui.dom.Check.MUST_USE_PROPERTY = 2;
 rx.browser.ui.dom.Check.HAS_BOOLEAN_VALUE = 4;
 rx.browser.ui.dom.Check.HAS_SIDE_EFFECTS = 8;
 rx.browser.ui.dom.Check.HAS_POSITIVE_NUMERIC_VALUE = 16;
-rx.browser.ui.dom.Property.ID_ATTRIBUTE_NAME = "data-reactid";
+rx.browser.ui.dom.Property.ID_ATTRIBUTE_NAME = "data-rxid";
 rx.browser.ui.dom.Property.defaultValueCache = { };
 rx.core.BatchingStrategy.isBatchingUpdates = false;
 rx.core.BatchingStrategy.transaction = new rx.core.BatchingTransaction();
