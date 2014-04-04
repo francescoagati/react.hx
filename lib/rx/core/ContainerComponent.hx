@@ -125,6 +125,19 @@ class ContainerComponent extends Component {
     });
   }
 
+  public function enqueueRemove(parentId: String, fromIndex: Int) {
+    // NOTE: Null values reduce hidden classes.
+    updateQueue.push({
+      parentId: parentId,
+      parentNode: null,
+      type: UpdateTypes.RemoveNode,
+      markupIndex: null,
+      textContent: null,
+      fromIndex: fromIndex,
+      toIndex: null
+    });
+  }
+
   public function unmountChildren() {
     trace('ContainerComponent.unmountChildren');
   }
@@ -138,7 +151,7 @@ class ContainerComponent extends Component {
   }
 
   public function removeChild(child: Component) {
-    trace('ContainerComponent.removeChild');
+    enqueueRemove(this.rootNodeId, child.mountIndex);
   }
 
   public function setTextContent(content: String) {
@@ -168,7 +181,10 @@ class ContainerComponent extends Component {
     //   child.unmountComponent();
     //   delete this._renderedChildren[name];
     // }
-    trace('unmountChildByName(..., $name)');
+    this.removeChild(child);
+    child.mountIndex = null;
+    child.unmountComponent();
+    this.renderedChildren.remove(name);
   }
 
 
