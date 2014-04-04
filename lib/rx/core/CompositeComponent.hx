@@ -98,7 +98,6 @@ class CompositeComponent<T> extends Component {
     }
 
     renderedComponent = renderValidatedComponent();
-
     compositeLifecycleState = null;
 
     var markup = renderedComponent.mountComponent(rootId, transaction, mountDepth + 1);
@@ -135,8 +134,7 @@ class CompositeComponent<T> extends Component {
     prevProps:Props,
     prevOwner: Owner,
     ?prevState: Dynamic,
-    ?prevContext: Dynamic,
-    ?prevChildren: Array<Component>) {
+    ?prevContext: Dynamic) {
 
     super.updateComponent(transaction, prevProps, prevOwner);
 
@@ -150,8 +148,8 @@ class CompositeComponent<T> extends Component {
       var thisId = rootNodeId;
       var prevComponentId = prevComponent.rootNodeId;
       prevComponent.unmountComponent();
-      var nextMarkup = renderedComponent.mountComponent(thisId, transaction, mountDepth + 1);
-
+      this.renderedComponent = nextComponent;
+      var nextMarkup = this.renderedComponent.mountComponent(thisId, transaction, mountDepth + 1);
       rx.browser.ui.dom.IdOperations.dangerouslyReplaceNodeWithMarkupById(prevComponentId, nextMarkup);
     }
 
@@ -169,20 +167,29 @@ class CompositeComponent<T> extends Component {
     var prevProps = this.props;
     var prevState = this.state;
     var prevContext = this.context;
+    var prevOwner = this.owner;
 
     this.props = nextProps;
     this.owner = nextOwner;
     this.state = nextState;
     this.context = nextContext;
 
-    this.updateComponent(transaction, prevProps, owner);
+    this.updateComponent(transaction, prevProps, prevOwner);
 
     transaction.getMountReady().enqueue(this, componentDidUpdate, [prevProps, prevState, prevContext]);
 
   }
 
   public function processProps(pendingProps: Props):Props {
-    return pendingProps;
+    var props:rx.core.Props = rx.core.Tools.merge(pendingProps, null);
+    var defaultProps = this.defaultProps;
+    for (propName in defaultProps.keys()) {
+      var propValue = props.get(propName);
+      if (untyped __js__('typeof propValue == "undefined"')) {
+        props.set(propName, defaultProps.get(propName));
+      }
+    }
+    return props;
   }
 
   public function processContext(pendingContext: Context):Context {
@@ -221,7 +228,6 @@ class CompositeComponent<T> extends Component {
 
     try {
       if (pendingForceUpdate || this.shouldComponentUpdate(nextProps, nextState, nextContext)) {
-
         pendingForceUpdate = false;
         this._performComponentUpdate(
           nextProps,

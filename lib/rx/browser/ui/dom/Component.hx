@@ -90,8 +90,7 @@ class Component extends ContainerComponent {
     props: Props,
     owner: Owner,
     ?prevProps: Props,
-    ?prevOwner: Owner,
-    ?prevChildren: Array<rx.core.Component>) {
+    ?prevOwner: Owner) {
 
     super.updateComponent(transaction, props, owner);
     _updateDOMProperties(props, transaction);

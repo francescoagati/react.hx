@@ -89,6 +89,7 @@ class ContainerComponent extends Component {
       var nextChild:rx.core.Component = nextChildren.get(name);
 
       if (Component.shouldUpdate(prevChild, nextChild)) {
+
         this.moveChild(prevChild, nextIndex, lastIndex);
         lastIndex = Std.int(Math.max(prevChild.mountIndex, lastIndex));
         prevChild.receiveComponent(nextChild, transaction);
@@ -138,12 +139,33 @@ class ContainerComponent extends Component {
     });
   }
 
+  public function enqueueMove(parentId: String, fromIndex: Int, toIndex: Int) {
+    // NOTE: Null values reduce hidden classes.
+    updateQueue.push({
+      parentId: parentId,
+      parentNode: null,
+      type: UpdateTypes.MoveExisting,
+      markupIndex: null,
+      textContent: null,
+      fromIndex: fromIndex,
+      toIndex: toIndex
+    });
+  }
+
   public function unmountChildren() {
     trace('ContainerComponent.unmountChildren');
+    var renderedChildren = this.renderedChildren;
+    for (name in renderedChildren.keys()) {
+      var renderedChild = renderedChildren.get(name);
+      renderedChild.unmountComponent();
+    }
+    this.renderedChildren = null;
   }
 
   public function moveChild(child: Component, toIndex: Int, lastIndex: Int) {
-    //trace('ContainerComponent.moveChild');
+    if (child.mountIndex < lastIndex) {
+      enqueueMove(this.rootNodeId, child.mountIndex, toIndex);
+    }
   }
 
   public function createChild(child: Component, mountImage: String) {
@@ -174,13 +196,6 @@ class ContainerComponent extends Component {
   }
 
   public function unmountChildByName(child: Component, name: String) {
-    // TODO: When is this not true?
-    // if (ReactComponent.isValidComponent(child)) {
-    //   this.removeChild(child);
-    //   child._mountIndex = null;
-    //   child.unmountComponent();
-    //   delete this._renderedChildren[name];
-    // }
     this.removeChild(child);
     child.mountIndex = null;
     child.unmountComponent();

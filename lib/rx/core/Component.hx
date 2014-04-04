@@ -14,9 +14,11 @@ enum Lifecycle {
 class Component extends Owner {
 
   public static function shouldUpdate(prevComponent: Component, nextComponent:Component):Bool {
+
     if (prevComponent != null &&
         nextComponent != null &&
-        prevComponent.props.get('key') == nextComponent.props.get('key') != null) {
+        prevComponent.props.get('key') == nextComponent.props.get('key') &&
+        prevComponent.props.exists('key')) {
 
       if (prevComponent.owner == nextComponent.owner) {
         return true;
@@ -28,7 +30,6 @@ class Component extends Owner {
   }
 
   public var props: Props;
-  public var children: Array<Component>;
   public var context: rx.core.Context;
   public var owner: Owner;
   public var descriptor:Descriptor;
@@ -36,7 +37,6 @@ class Component extends Owner {
   var pendingDescriptor: Descriptor;
   var pendingProps: Props;
   var pendingOwner: Owner;
-  var pendingChildren: Array<Component>;
   var lifecycleState: Lifecycle;
 
   public var pendingCallbacks: Array<Dynamic>;
@@ -72,7 +72,6 @@ class Component extends Owner {
 
   public function new(descriptor: Descriptor) {
     super();
-    this.children = descriptor.children;
     this.props = descriptor.props;
     this.descriptor = descriptor;
 
@@ -115,7 +114,6 @@ class Component extends Owner {
   public function receiveComponent(nextComponent:Component, transaction:ReconcileTransaction) {
     pendingOwner = nextComponent.owner;
     pendingProps = nextComponent.props;
-    pendingChildren = nextComponent.children;
     _performUpdateIfNecessary(transaction);
   }
 
@@ -128,6 +126,7 @@ class Component extends Owner {
 
     this.props = this.pendingProps;
     this.owner = this.pendingOwner;
+
     this.pendingProps = null;
     this.updateComponent(transaction, prevProps, prevOwner);
   }
@@ -143,8 +142,7 @@ class Component extends Owner {
     prevProps:Props,
     prevOwner: Owner,
     ?prevState: Dynamic,
-    ?prevContext: Dynamic,
-    ?prevChildren: Array<Component>) {
+    ?prevContext: Dynamic) {
 
     var props = this.props;
     // If either the owner or a `ref` has changed, make sure the newest owner

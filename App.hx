@@ -4,30 +4,39 @@ import rx.browser.ui.DOM;
 import rx.core.Component;
 import rx.core.CompositeComponent;
 
-class InnerComponent extends CompositeComponent<Dynamic> {
+class FirstComponent extends CompositeComponent<Dynamic> {
   public override function render() {
     return DOM.text('Hello');
   }
 }
 
-class ListComponent extends CompositeComponent<Int> {
+class SecondComponent extends CompositeComponent<Dynamic> {
+  public override function render() {
+    return DOM.text('World');
+  }
+}
+
+class SwitchComponent extends CompositeComponent<Bool> {
 
   public override function getInitialState() {
-    return 10;
+    return true;
   }
 
   var interval: Int;
-  var diff: Int = -1;
 
   public override function componentDidMount() {
-    interval = js.Browser.window.setInterval(function() {
-      this.setState(this.state - diff);
-      if (this.state == 0 || this.state == 40) diff = -diff;
-    }, 5);
+    js.Browser.window.setInterval(function() {
+      this.setState(!this.state);
+    }, 500);
+  }
+
+  public override function componentWillUpdate(props, owner, context) {
+
   }
 
   public override function render() {
-    return DOM.el('ul', [for(i in 0...this.state) DOM.el('li', [new InnerComponent()])]);
+
+    return DOM.el('div', [ this.state ? new FirstComponent() : new SecondComponent() ]);
   }
 
 }
@@ -40,7 +49,7 @@ class App {
 
       var container = d.getElementById('app');
       var start = Date.now().getTime();
-      rx.browser.ui.Mount.renderComponent(new ListComponent(), container);
+      rx.browser.ui.Mount.renderComponent(new SwitchComponent(), container);
       js.Browser.window.setTimeout(function () {
         var end = Date.now().getTime() - start;
       }, 0);
