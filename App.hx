@@ -3,6 +3,18 @@ package ;
 import rx.browser.ui.DOM;
 import rx.core.CompositeComponent;
 
+class First extends CompositeComponent<Dynamic> {
+  public override function render() {
+    return DOM.el('div', [DOM.text('One')]);
+  }
+}
+
+class Second extends CompositeComponent<Dynamic> {
+  public override function render() {
+    return DOM.el('div', [DOM.text('Two')]);
+  }
+}
+
 class SwitchComponent extends CompositeComponent<Bool> {
 
   public override function getInitialState() {
@@ -14,15 +26,17 @@ class SwitchComponent extends CompositeComponent<Bool> {
   public override function componentDidMount() {
     js.Browser.window.setInterval(function() {
       this.setState(!this.state);
-    }, 500);
+    }, 300);
   }
 
   public override function render() {
 
     return DOM.el('div', [ this.state ?
-      DOM.text('One') :
-      DOM.text('Two')
-    ]);
+      new First() :
+      new Second()
+    ], {
+      'data-component': 'Hello'
+    });
   }
 
 }

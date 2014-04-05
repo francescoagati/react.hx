@@ -89,7 +89,6 @@ class ContainerComponent extends Component {
       var nextChild:rx.core.Component = nextChildren.get(name);
 
       if (Component.shouldUpdate(prevChild, nextChild)) {
-
         this.moveChild(prevChild, nextIndex, lastIndex);
         lastIndex = Std.int(Math.max(prevChild.mountIndex, lastIndex));
         prevChild.receiveComponent(nextChild, transaction);

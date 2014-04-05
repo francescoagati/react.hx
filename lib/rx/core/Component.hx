@@ -17,8 +17,8 @@ class Component extends Owner {
 
     if (prevComponent != null &&
         nextComponent != null &&
-        prevComponent.props.get('key') == nextComponent.props.get('key') &&
-        prevComponent.props.exists('key')) {
+        prevComponent.type == nextComponent.type &&
+        prevComponent.props.get('key') == nextComponent.props.get('key')) {
 
       if (prevComponent.owner == nextComponent.owner) {
         return true;
@@ -33,6 +33,7 @@ class Component extends Owner {
   public var context: rx.core.Context;
   public var owner: Owner;
   public var descriptor:Descriptor;
+  public var type: String;
 
   var pendingDescriptor: Descriptor;
   var pendingProps: Props;
@@ -74,6 +75,7 @@ class Component extends Owner {
     super();
     this.props = descriptor.props;
     this.descriptor = descriptor;
+    this.type = Type.getClassName(Type.getClass(this));
 
     this.context = rx.core.Context.current;
     this.owner = Owner.current;

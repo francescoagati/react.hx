@@ -27,9 +27,9 @@ class ChildrenOperations {
   // ### Public
 
   public static function processUpdates(updates: Array<Dynamic>, markupList: Array<String>) {
-
     var initialChildren: rx.core.Props = null;
     var updatedChildren = null;
+
     for (update in updates) {
       if (update.type == UpdateTypes.MoveExisting || update.type == UpdateTypes.RemoveNode) {
         var updatedIndex = update.fromIndex;
@@ -52,26 +52,19 @@ class ChildrenOperations {
     var renderedMarkup = Danger.dangerouslyRenderMarkup(markupList);
     if (updatedChildren != null && updatedChildren.length > 0) {
       for (child in updatedChildren) {
-        if (child.parentNode != null)
+        if (child != null && child.parentNode != null)
           child.parentNode.removeChild(child);
       }
     }
 
     for (update in updates) {
-      switch (update.type) {
-        case UpdateTypes.InsertMarkup:
-          insertChildAt(update.parentNode, renderedMarkup[update.markupIndex], update.toIndex);
-          break;
-        case UpdateTypes.MoveExisting:
-          insertChildAt(update.parentNode, initialChildren.get(update.parentId)[update.fromIndex], update.toIndex);
-          break;
-        case UpdateTypes.TextContent:
-          updateTextContent(update.parentNode, update.textContent);
-          break;
-        case UpdateTypes.RemoveNode:
-          // already removed
-          break;
-      }
+      if (update.type == UpdateTypes.InsertMarkup)
+        insertChildAt(update.parentNode, renderedMarkup[update.markupIndex], update.toIndex);
+      else if(update.type == UpdateTypes.MoveExisting)
+        insertChildAt(update.parentNode, initialChildren.get(update.parentId)[update.fromIndex], update.toIndex);
+      else if(update.type == UpdateTypes.TextContent)
+        updateTextContent(update.parentNode, update.textContent);
+      else if (update.type == UpdateTypes.RemoveNode) {}
     }
   }
 
