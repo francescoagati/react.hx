@@ -17,7 +17,7 @@ class PutListenerQueue {
     listenersToPut = new Array<Listener>();
   }
 
-  public function enqueuePutListener(rootNodeId: String, propKey: String, propValue: Dynamic) {
+  public inline function enqueuePutListener(rootNodeId: String, propKey: String, propValue: Dynamic) {
     listenersToPut.push({
       rootNodeId: rootNodeId,
       propKey: propKey,
@@ -25,7 +25,7 @@ class PutListenerQueue {
     });
   }
 
-  public function putListeners():Void {
+  public inline function putListeners():Void {
     for (listener in listenersToPut) {
       EventEmitter.putListener(
         listener.rootNodeId,
@@ -35,11 +35,11 @@ class PutListenerQueue {
     }
   }
 
-  public function reset() {
+  public inline function reset() {
     listenersToPut.splice(0, listenersToPut.length);
   }
 
-  public function destructor() {
+  public inline function destructor() {
     reset();
   }
 

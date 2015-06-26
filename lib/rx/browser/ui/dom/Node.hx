@@ -1,7 +1,7 @@
 package rx.browser.ui.dom;
 
 class Node {
-  public static function containsNode(outerNode:js.html.Node, innerNode:js.html.Node):Bool {
+  public inline static function containsNode(outerNode:js.html.Node, innerNode:js.html.Node):Bool {
     if (outerNode == null || innerNode == null)  return false;
     else if (outerNode == innerNode) return true;
     else if (isTextNode(outerNode)) return false;

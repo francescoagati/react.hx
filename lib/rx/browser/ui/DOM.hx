@@ -19,12 +19,12 @@ class DOM {
     span: false
   };
 
-  public static function el(tagName: String, ?children: Array<Component> = null, ?props: Props = null) {
+  public inline static function el(tagName: String, ?children: Array<Component> = null, ?props: Props = null) {
     var descriptor = new Descriptor(children, props);
     return new DomComponent(tagName, tagsMap.get(tagName), descriptor);
   }
 
-  public static function text(text: String):Component {
+  public inline static function text(text: String):Component {
     return new TextComponent(text, emptyDescriptor);
   }
 }

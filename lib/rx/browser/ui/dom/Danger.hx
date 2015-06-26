@@ -5,7 +5,7 @@ class Danger {
   static var OPEN_TAG_NAME_EXP = ~/^(<[^ \/>]+)/;
   static var RESULT_INDEX_ATTR = 'data-danger-index';
 
-  public static function createArrayFrom(obj:js.html.NodeList):Array<js.html.Node> {
+  public inline static function createArrayFrom(obj:js.html.NodeList):Array<js.html.Node> {
     var res = [];
     for (i in obj) {
       res.push(i);
@@ -14,7 +14,7 @@ class Danger {
   }
 
   public static var dummyNode = js.Browser.document.createElement('div');
-  public static function createNodesFromMarkup(markup: String, handleScript: Dynamic) {
+  public inline static function createNodesFromMarkup(markup: String, handleScript: Dynamic) {
     var node = dummyNode;
     var nodeName = getNodeName(markup);
 
@@ -43,15 +43,15 @@ class Danger {
     return nodes;
   }
 
-  private static function getNodeName(markup:String):String {
+  private inline static function getNodeName(markup:String):String {
     return markup.substring(1, markup.indexOf(' '));
   }
 
-  private static function getMarkupWrap(name: String):Array<Dynamic> {
+  private inline static function getMarkupWrap(name: String):Array<Dynamic> {
     return null;
   }
 
-  public static function dangerouslyRenderMarkup(markupList: Array<String>):Array<js.html.Node> {
+  public inline static function dangerouslyRenderMarkup(markupList: Array<String>):Array<js.html.Node> {
     var nodeName = null;
     var markupByNodeName:rx.core.Props = {};
 
@@ -97,7 +97,7 @@ class Danger {
 
   }
 
-  public static function dangerouslyReplaceNodeWithMarkup(oldChild: js.html.Node, markup: String) {
+  public inline static function dangerouslyReplaceNodeWithMarkup(oldChild: js.html.Node, markup: String) {
     var newChild = createNodesFromMarkup(markup, function () {})[0];
     oldChild.parentNode.replaceChild(newChild, oldChild);
   }

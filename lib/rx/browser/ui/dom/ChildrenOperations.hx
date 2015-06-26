@@ -4,7 +4,7 @@ import rx.core.ContainerComponent.UpdateTypes;
 
 class ChildrenOperations {
 
-  private static function insertChildAt(parentNode: js.html.Node, childNode: js.html.Node, index: Int) {
+  private inline static function insertChildAt(parentNode: js.html.Node, childNode: js.html.Node, index: Int) {
     var childNodes = parentNode.childNodes;
     if (childNodes[index] == childNode) {
       return;
@@ -19,14 +19,14 @@ class ChildrenOperations {
     }
   }
 
-  public static function updateTextContent(node: js.html.Node, text: String) {
+  public inline static function updateTextContent(node: js.html.Node, text: String) {
     node.textContent = text;
   }
 
 
   // ### Public
 
-  public static function processUpdates(updates: Array<Dynamic>, markupList: Array<String>) {
+  public inline static function processUpdates(updates: Array<Dynamic>, markupList: Array<String>) {
     var initialChildren: rx.core.Props = null;
     var updatedChildren = null;
 

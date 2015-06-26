@@ -10,7 +10,7 @@ class ReconcileTransaction extends Transaction {
 
   public static var pool = new PooledClass<ReconcileTransaction>();
 
-  public override function getTransactionWrappers():Array<rx.utils.Transaction.Wrapper> {
+  public inline override function getTransactionWrappers():Array<rx.utils.Transaction.Wrapper> {
 
     var selectionRestoration = {
       initialize: function () {},
@@ -55,11 +55,11 @@ class ReconcileTransaction extends Transaction {
     putListenerQueue = PutListenerQueue.pool.getPooled();
   }
 
-  public function getMountReady():MountReady {
+  public inline function getMountReady():MountReady {
     return mountReady;
   }
 
-  public function getPutListenerQueue():PutListenerQueue {
+  public inline function getPutListenerQueue():PutListenerQueue {
     return putListenerQueue;
   }
 

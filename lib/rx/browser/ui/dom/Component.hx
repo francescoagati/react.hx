@@ -14,13 +14,13 @@ class Component extends ContainerComponent {
   var tagOpen: String;
   var tagClose: String;
   var omitClose: Bool;
-  public function new(tagName: String, omitClose: Bool, descriptor: rx.core.Descriptor) {
+  public inline function new(tagName: String, omitClose: Bool, descriptor: rx.core.Descriptor) {
     super(descriptor);
     this.tagOpen = '<$tagName';
     this.tagClose = omitClose ? '' : '</$tagName>';
   }
 
-  public override function mountComponent(rootId: String, transaction: ReconcileTransaction, mountDepth: Int):String {
+  public inline override function mountComponent(rootId: String, transaction: ReconcileTransaction, mountDepth: Int):String {
     super.mountComponent(rootId, transaction, mountDepth);
     return (
       createOpenTagMarkupAndPutListeners(transaction) +
@@ -30,7 +30,7 @@ class Component extends ContainerComponent {
   }
 
   private static var ELEMENT_NODE_TYPE = 1;
-  private function putListener(id: String, registrationName: String, listener: Dynamic, transaction: ReconcileTransaction) {
+  private inline function putListener(id: String, registrationName: String, listener: Dynamic, transaction: ReconcileTransaction) {
     var container = rx.browser.ui.Mount.findReactContainerForId(id);
     if (container != null) {
       var doc = container.nodeType == ELEMENT_NODE_TYPE ?
@@ -42,7 +42,7 @@ class Component extends ContainerComponent {
     transaction.getPutListenerQueue().enqueuePutListener(id, registrationName, listener);
   }
 
-  public function createOpenTagMarkupAndPutListeners(transaction: ReconcileTransaction):String {
+  public inline function createOpenTagMarkupAndPutListeners(transaction: ReconcileTransaction):String {
     var props = this.props;
     var ret = this.tagOpen;
     if (props != null) {
@@ -79,13 +79,13 @@ class Component extends ContainerComponent {
     return ret + ' ' + markupForId + '>';
   }
 
-  public function createContentMarkup(transaction: ReconcileTransaction) {
+  public inline function createContentMarkup(transaction: ReconcileTransaction) {
     var children = this.props.get('children');
     var mountImages = this.mountChildren(children, transaction);
     return mountImages.join('');
   }
 
-  public override function updateComponent(
+  public inline override function updateComponent(
     transaction: ReconcileTransaction,
     props: Props,
     owner: Owner,
@@ -98,7 +98,7 @@ class Component extends ContainerComponent {
 
   }
 
-  public function _updateDOMProperties(lastProps: Props, transaction: ReconcileTransaction) {
+  public inline function _updateDOMProperties(lastProps: Props, transaction: ReconcileTransaction) {
     var nextProps = this.props;
 
     var styleName = null;
@@ -140,7 +140,7 @@ class Component extends ContainerComponent {
     }
   }
 
-  public function _updateDOMChildren(lastProps: Props, transaction: ReconcileTransaction) {
+  public inline function _updateDOMChildren(lastProps: Props, transaction: ReconcileTransaction) {
     var nextProps = this.props;
     var lastChildren = lastProps.get('children');
     var nextChildren = nextProps.get('children');
