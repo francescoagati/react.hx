@@ -5,19 +5,19 @@ import rx.browser.RootIndex;
 class InstanceHandles {
 
   public static var SEPARATOR = '.';
-  public static function getReactRootIdString(index:Int):String {
+  public inline static function getReactRootIdString(index:Int):String {
     return untyped SEPARATOR + index.toString(36);
   }
 
-  public static function createReactRootId():String {
+  public inline static function createReactRootId():String {
     return getReactRootIdString(RootIndex.createReactRootIndex());
   }
 
-  public static function createReactID(rootId:String, name:String):String {
+  public inline static function createReactID(rootId:String, name:String):String {
     return rootId + name;
   }
 
-  public static function getReactRootIdFromNodeId(id:String) {
+  public inline static function getReactRootIdFromNodeId(id:String) {
     if (id != null && id.charAt(0) == SEPARATOR && id.length > 1) {
       var index = id.indexOf(SEPARATOR, 1);
       return index > -1 ? id.substr(0, index) : id;
@@ -25,17 +25,17 @@ class InstanceHandles {
     return null;
   }
 
-  public static function getParentId(id: String, _) {
+  public inline static function getParentId(id: String, _) {
     return (id != null) ? id.substring(0, id.lastIndexOf(SEPARATOR)) : '';
   }
 
-  public static function isValidId(id: String) {
+  public  inline static function isValidId(id: String) {
     return id == '' || (id.charAt(0) == SEPARATOR && id.charAt(id.length - 1) != SEPARATOR);
   }
 
-  public static function getNextDescendantId(ancestorId: String, destinationId: String) {
+  public  inline static function getNextDescendantId(ancestorId: String, destinationId: String) {
     // untyped __js__('debugger');
-    if (!isValidId(ancestorId) || !isValidId(destinationId)) 
+    if (!isValidId(ancestorId) || !isValidId(destinationId))
       throw 'getNextDescendantId($ancestorId, $destinationId): Received an invalid DOM ID.';
     if (!isAncestorIdOf(ancestorId, destinationId))
       throw 'getNextDescendantId($ancestorId, $destinationId): React has made an invalid assumption about the DOM hierarchy..';
@@ -52,7 +52,7 @@ class InstanceHandles {
   }
 
   public static var MAX_TREE_DEPTH = 100;
-  public static function traverseParentPath(start: String, stop: String, cb: Dynamic, arg: Dynamic, skipFirst: Bool, skipLast: Bool) {
+  public inline static function traverseParentPath(start: String, stop: String, cb: Dynamic, arg: Dynamic, skipFirst: Bool, skipLast: Bool) {
     if (start == null) start = '';
     if (stop == null) stop = '';
     if (start == stop) throw 'traverseParentPath(...): Cannot traverse from and to the same ID, $start';
@@ -67,7 +67,7 @@ class InstanceHandles {
       var ret = null;
 
       id = traverse(id, stop);
-      
+
       if ((!skipFirst || id != start) && (!skipLast || id!= stop)) {
         ret = cb(id, traverseUp, arg);
       }
@@ -78,15 +78,15 @@ class InstanceHandles {
     }
   }
 
-  public static function traverseAncestors(targetId: String, cb: Dynamic, ?arg: Dynamic = null) {
+  public inline static function traverseAncestors(targetId: String, cb: Dynamic, ?arg: Dynamic = null) {
     traverseParentPath('', targetId, cb, arg, true, false);
   }
 
-  public static function isBoundary(id: String, index: Int): Bool {
+  public  inline static function isBoundary(id: String, index: Int): Bool {
     return id.charAt(index) == SEPARATOR || index == id.length;
   }
 
-  public static function isAncestorIdOf(ancestorId:String, descendantId:String):Bool {
+  public  inline static function isAncestorIdOf(ancestorId:String, descendantId:String):Bool {
     return (descendantId.indexOf(ancestorId) == 0 && isBoundary(descendantId, ancestorId.length));
   }
 

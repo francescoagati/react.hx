@@ -14,7 +14,7 @@ enum UpdateTypes {
 class ContainerComponent extends Component {
   public static var updateDepth:Int = 0;
   var renderedChildren: rx.core.Props;
-  public function mountChildren(nestedChildren:Array<Component>, transaction:ReconcileTransaction) {
+  public inline function mountChildren(nestedChildren:Array<Component>, transaction:ReconcileTransaction) {
     var children:Props = FlattenChildren.flattenChildren(nestedChildren);
     var mountImages = [];
     var index = 0;
@@ -30,14 +30,14 @@ class ContainerComponent extends Component {
     return mountImages;
   }
 
-  public function updateTextContent(content: String) {
+  public inline function updateTextContent(content: String) {
     ContainerComponent.updateDepth++;
     trace('ContainerComponent.updateTextContent');
   }
 
   public static var updateQueue: Array<Dynamic> = new Array<Dynamic>();
   public static var markupQueue: Array<String> = new Array<String>();
-  public static function processQueue() {
+  public inline static function processQueue() {
     if (updateQueue.length > 0) {
       rx.browser.ui.dom.IdOperations.dangerouslyProcessChildrenUpdates(
         updateQueue,
@@ -47,12 +47,12 @@ class ContainerComponent extends Component {
     }
   }
 
-  public static function clearQueue() {
+  public inline static function clearQueue() {
     updateQueue.splice(0, updateQueue.length);
     markupQueue.splice(0, markupQueue.length);
   }
 
-  public function updateChildren(nextNestedChildren: Array<Component>, transaction: ReconcileTransaction) {
+  public inline function updateChildren(nextNestedChildren: Array<Component>, transaction: ReconcileTransaction) {
     updateDepth++;
     var errorThrown = true;
     try {
@@ -69,7 +69,7 @@ class ContainerComponent extends Component {
 
   }
 
-  public function _updateChildren(nextNestedChildren: Array<Component>, transaction: ReconcileTransaction) {
+  public inline function _updateChildren(nextNestedChildren: Array<Component>, transaction: ReconcileTransaction) {
     var nextChildren:Props = FlattenChildren.flattenChildren(nextNestedChildren);
     var prevChildren = this.renderedChildren;
 
@@ -113,7 +113,7 @@ class ContainerComponent extends Component {
 
   }
 
-  private function enqueueMarkup(parentId: String, markup: String, toIndex: Int) {
+  private inline function enqueueMarkup(parentId: String, markup: String, toIndex: Int) {
     updateQueue.push({
       parentId: parentId,
       parentNode: null,
@@ -125,7 +125,7 @@ class ContainerComponent extends Component {
     });
   }
 
-  public function enqueueRemove(parentId: String, fromIndex: Int) {
+  public inline function enqueueRemove(parentId: String, fromIndex: Int) {
     // NOTE: Null values reduce hidden classes.
     updateQueue.push({
       parentId: parentId,
@@ -138,7 +138,7 @@ class ContainerComponent extends Component {
     });
   }
 
-  public function enqueueMove(parentId: String, fromIndex: Int, toIndex: Int) {
+  public inline function enqueueMove(parentId: String, fromIndex: Int, toIndex: Int) {
     // NOTE: Null values reduce hidden classes.
     updateQueue.push({
       parentId: parentId,
@@ -151,7 +151,7 @@ class ContainerComponent extends Component {
     });
   }
 
-  public function unmountChildren() {
+  public inline function unmountChildren() {
     trace('ContainerComponent.unmountChildren');
     var renderedChildren = this.renderedChildren;
     for (name in renderedChildren.keys()) {
@@ -161,25 +161,25 @@ class ContainerComponent extends Component {
     this.renderedChildren = null;
   }
 
-  public function moveChild(child: Component, toIndex: Int, lastIndex: Int) {
+  public inline function moveChild(child: Component, toIndex: Int, lastIndex: Int) {
     if (child.mountIndex < lastIndex) {
       enqueueMove(this.rootNodeId, child.mountIndex, toIndex);
     }
   }
 
-  public function createChild(child: Component, mountImage: String) {
+  public  inline function createChild(child: Component, mountImage: String) {
     enqueueMarkup(this.rootNodeId, mountImage, child.mountIndex);
   }
 
-  public function removeChild(child: Component) {
+  public inline function removeChild(child: Component) {
     enqueueRemove(this.rootNodeId, child.mountIndex);
   }
 
-  public function setTextContent(content: String) {
+  public inline function setTextContent(content: String) {
     trace('ContainerComponent.setTextContent');
   }
 
-  public function mountChildByNameAtIndex(child: Component, name: String, index: Int, transaction: ReconcileTransaction) {
+  public inline function mountChildByNameAtIndex(child: Component, name: String, index: Int, transaction: ReconcileTransaction) {
 
     var rootId = this.rootNodeId + name;
     var mountImage = child.mountComponent(
@@ -194,7 +194,7 @@ class ContainerComponent extends Component {
 
   }
 
-  public function unmountChildByName(child: Component, name: String) {
+  public inline function unmountChildByName(child: Component, name: String) {
     this.removeChild(child);
     child.mountIndex = null;
     child.unmountComponent();

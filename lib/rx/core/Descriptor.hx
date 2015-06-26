@@ -4,7 +4,7 @@ import rx.core.Component;
 import rx.core.Props;
 
 class Descriptor {
-  public static function cloneAndReplaceProps(oldDescriptor: Descriptor, newProps: Props) {
+  public inline static function cloneAndReplaceProps(oldDescriptor: Descriptor, newProps: Props) {
     var newDescriptor = new Descriptor(oldDescriptor.props.get('chidren'), oldDescriptor.props);
     newDescriptor.props = newProps;
     return newDescriptor;

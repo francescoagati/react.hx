@@ -4,16 +4,16 @@ class MountReady {
   public static var pool = new rx.utils.PooledClass<MountReady>();
 
   var queue: Array<Dynamic> = new Array<Dynamic>();
-  public function new(initalCollection: Dynamic) {
+  public inline function new(initalCollection: Dynamic) {
     if (initalCollection != null)
       queue = initalCollection;
   }
 
-  public function enqueue(component: rx.core.Component, callback:Dynamic, ?args: Array<Dynamic> = null) {
+  public inline function enqueue(component: rx.core.Component, callback:Dynamic, ?args: Array<Dynamic> = null) {
     queue.push({component: component, callback: callback, args: args});
   }
 
-  public function notifyAll() {
+  public  inline function notifyAll() {
     var q = queue;
     if (q != null) {
       for (item in q) {

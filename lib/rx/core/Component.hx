@@ -13,7 +13,7 @@ enum Lifecycle {
 
 class Component extends Owner {
 
-  public static function shouldUpdate(prevComponent: Component, nextComponent:Component):Bool {
+  public  static function shouldUpdate(prevComponent: Component, nextComponent:Component):Bool {
 
     if (prevComponent != null &&
         nextComponent != null &&
@@ -45,13 +45,13 @@ class Component extends Owner {
   public var mountIndex: Int;
   public var rootNodeId: String;
 
-  public function isMounted():Bool return lifecycleState == Lifecycle.Mounted;
+  public  function isMounted():Bool return lifecycleState == Lifecycle.Mounted;
 
   public function isOwnedBy(owner:Owner):Bool {
     return owner == this.owner;
   }
 
-  public function setProps(partialProps: Props, callback: Dynamic) {
+  public inline function setProps(partialProps: Props, callback: Dynamic) {
     var descr = pendingDescriptor;
     if (descr == null) descr = descriptor;
     replaceProps(
@@ -60,7 +60,7 @@ class Component extends Owner {
     );
   }
 
-  public function replaceProps(props:Props, callback: Dynamic) {
+  public inline function replaceProps(props:Props, callback: Dynamic) {
     if (!isMounted()) throw 'Can only update a mounted component';
     if (mountDepth != null) throw 'You called `setProps` or `replaceProps` on a component with a parent.';
 
@@ -71,7 +71,7 @@ class Component extends Owner {
     rx.core.Updates.enqueueUpdate(this, callback);
   }
 
-  public function new(descriptor: Descriptor) {
+  public  inline function new(descriptor: Descriptor) {
     super();
     this.props = descriptor.props;
     this.descriptor = descriptor;
@@ -99,12 +99,12 @@ class Component extends Owner {
     return null;
   }
 
-  public function _mountComponentIntoNode(rootId:String, container:js.html.Element, transaction: ReconcileTransaction, shouldReuseMarkup:Bool) {
+  public inline function _mountComponentIntoNode(rootId:String, container:js.html.Element, transaction: ReconcileTransaction, shouldReuseMarkup:Bool) {
     var markup = mountComponent(rootId, transaction, 0);
     Environment.mountImageIntoNode(markup, container, shouldReuseMarkup);
   }
 
-  public function mountComponentIntoNode(rootId, container, shouldReuseMarkup) {
+  public  inline function mountComponentIntoNode(rootId, container, shouldReuseMarkup) {
     var transaction = ReconcileTransaction.pool.getPooled();
     transaction.perform(
       _mountComponentIntoNode,
@@ -113,7 +113,7 @@ class Component extends Owner {
     ReconcileTransaction.pool.release(transaction);
   }
 
-  public function receiveComponent(nextComponent:Component, transaction:ReconcileTransaction) {
+  public  function receiveComponent(nextComponent:Component, transaction:ReconcileTransaction) {
     pendingOwner = nextComponent.owner;
     pendingProps = nextComponent.props;
     _performUpdateIfNecessary(transaction);
@@ -162,7 +162,7 @@ class Component extends Owner {
 
   }
 
-  public function unmountComponent() {
+  public inline function unmountComponent() {
     if (!isMounted()) throw 'Can only unmount a mounted component.';
     var props = this.props;
     if (props.get('ref') != null) {

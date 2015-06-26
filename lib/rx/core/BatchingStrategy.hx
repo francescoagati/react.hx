@@ -8,7 +8,7 @@ class BatchingTransaction extends Transaction {
     this.reinitializeTransaction();
   };
 
-  public override function getTransactionWrappers():Array<rx.utils.Transaction.Wrapper> {
+  public inline override function getTransactionWrappers():Array<rx.utils.Transaction.Wrapper> {
     var resetBatchUpdatesWrapper = {
       initialize: function () {},
       close: function () {
@@ -29,7 +29,7 @@ class BatchingTransaction extends Transaction {
 class BatchingStrategy {
   public static var isBatchingUpdates: Bool = false;
   public static var transaction: BatchingTransaction = new BatchingTransaction();
-  public static function batchUpdates(callback: Dynamic, param: Dynamic) {
+  public inline static function batchUpdates(callback: Dynamic, param: Dynamic) {
 
     var alreadyBathingUpdates = BatchingStrategy.isBatchingUpdates;
 

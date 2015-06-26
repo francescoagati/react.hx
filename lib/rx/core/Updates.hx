@@ -6,7 +6,7 @@ class Updates {
 
   public static var dirtyComponents: Array<Component> = new Array<Component>();
 
-  public static function enqueueUpdate(component: Component, callback: Dynamic):Void {
+  public inline static function enqueueUpdate(component: Component, callback: Dynamic):Void {
 
     if (!rx.core.BatchingStrategy.isBatchingUpdates) {
       component.performUpdateIfNecessary();
@@ -30,7 +30,7 @@ class Updates {
   }
 
 
-  public static function runBatchedUpdates() {
+  public inline static function runBatchedUpdates() {
     dirtyComponents.sort(function (c1: Component, c2: Component) {
       return c1.mountDepth - c2.mountDepth;
     });
@@ -49,14 +49,14 @@ class Updates {
     }
   }
 
-  public static function flushBatchedUpdates() {
+  public  inline static function flushBatchedUpdates() {
     try {
       runBatchedUpdates();
     } catch(e:Dynamic) {}
     clearDirtyComponents();
   }
 
-  public static function batchedUpdates(callback: Dynamic, param:Dynamic) {
+  public inline static function batchedUpdates(callback: Dynamic, param:Dynamic) {
     BatchingStrategy.batchUpdates(callback, param);
   }
 

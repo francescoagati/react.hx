@@ -61,7 +61,7 @@ class CompositeComponent<T> extends Component {
 
   public function render():Component { return null; }
 
-  private function renderValidatedComponent():Component {
+  private  inline function renderValidatedComponent():Component {
 
     var renderedComponent = null;
     var previousContext = Context.current;
@@ -78,7 +78,7 @@ class CompositeComponent<T> extends Component {
     return renderedComponent;
   }
 
-  public override function mountComponent(rootId: String, transaction: ReconcileTransaction, mountDepth:Int):String {
+  public inline override function mountComponent(rootId: String, transaction: ReconcileTransaction, mountDepth:Int):String {
 
     super.mountComponent(rootId, transaction, mountDepth);
     compositeLifecycleState = CompositeLifecycle.Mounting;
@@ -105,12 +105,12 @@ class CompositeComponent<T> extends Component {
     return markup;
   }
 
-  public function setState(state: T) {
+  public inline function setState(state: T) {
     pendingState = state;
     digest();
   }
 
-  public function digest(?callback: Dynamic) {
+  public inline function digest(?callback: Dynamic) {
     pendingForceUpdate = true;
     rx.core.Updates.enqueueUpdate(this, callback);
   }
@@ -155,7 +155,7 @@ class CompositeComponent<T> extends Component {
 
   }
 
-  public function _performComponentUpdate(
+  public inline function _performComponentUpdate(
     nextProps: Props,
     nextOwner: Owner,
     nextState: T,
@@ -180,7 +180,7 @@ class CompositeComponent<T> extends Component {
 
   }
 
-  public function processProps(pendingProps: Props):Props {
+  public inline function processProps(pendingProps: Props):Props {
     var props:rx.core.Props = rx.core.Tools.merge(pendingProps, null);
     var defaultProps = this.defaultProps;
     for (propName in defaultProps.keys()) {
@@ -192,7 +192,7 @@ class CompositeComponent<T> extends Component {
     return props;
   }
 
-  public function processContext(pendingContext: Context):Context {
+  public inline function processContext(pendingContext: Context):Context {
     return pendingContext;
   }
 
@@ -248,7 +248,7 @@ class CompositeComponent<T> extends Component {
     compositeLifecycleState = null;
   }
 
-  public override function performUpdateIfNecessary() {
+  public inline override function performUpdateIfNecessary() {
     var _state = compositeLifecycleState;
     if (_state == CompositeLifecycle.Mounting || _state == CompositeLifecycle.ReceivingProps) {
       return;

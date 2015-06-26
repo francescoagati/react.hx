@@ -1,3 +1,5 @@
 -cp lib
 -main App
 -js build/app.js
+-dce full
+-D analyzer
