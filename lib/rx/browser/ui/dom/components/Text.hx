@@ -1,4 +1,5 @@
 package rx.browser.ui.dom.components;
+using rx.core.ComponentTools;
 
 class Text extends rx.core.Component {
   var text: String;
@@ -8,8 +9,8 @@ class Text extends rx.core.Component {
   }
 
   public inline override function mountComponent(rootId: String, transaction: rx.browser.ReconcileTransaction, mountDepth: Int):String {
-    super.mountComponent(rootId, transaction, mountDepth);
-
+    this.ext_mountComponent(rootId, transaction, mountDepth);
+  
     var id = rx.browser.ui.dom.PropertyOperations.createMarkupForId(rootId);
     return '<span $id>$text</span>';
   }

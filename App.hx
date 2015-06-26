@@ -4,32 +4,32 @@ import rx.browser.ui.DOM;
 import rx.core.CompositeComponent;
 
 class First extends CompositeComponent<Dynamic> {
-  public override function render() {
+  public inline override function render() {
     return DOM.el('div', [DOM.text('One')]);
   }
 }
 
 class Second extends CompositeComponent<Dynamic> {
-  public override function render() {
+  public inline override function render() {
     return DOM.el('div', [DOM.text('Two')]);
   }
 }
 
 class SwitchComponent extends CompositeComponent<Bool> {
 
-  public override function getInitialState() {
+  public inline override function getInitialState() {
     return true;
   }
 
   var interval: Int;
 
-  public override function componentDidMount() {
+  public inline override function componentDidMount() {
     js.Browser.window.setInterval(function() {
       this.setState(!this.state);
-    }, 300);
+    }, 50);
   }
 
-  public override function render() {
+  public inline override function render() {
 
     return DOM.el('div', [ this.state ?
       new First() :

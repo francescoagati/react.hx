@@ -4,11 +4,11 @@ import rx.core.Component;
 import rx.core.ContainerComponent;
 import rx.core.Props;
 import rx.core.Owner;
-
 import rx.browser.ReconcileTransaction;
-
 import rx.browser.ui.dom.Property in DomProperty;
 import rx.browser.ui.dom.IdOperations;
+
+using rx.core.ComponentTools;
 
 class Component extends ContainerComponent {
   var tagOpen: String;
@@ -21,7 +21,7 @@ class Component extends ContainerComponent {
   }
 
   public inline override function mountComponent(rootId: String, transaction: ReconcileTransaction, mountDepth: Int):String {
-    super.mountComponent(rootId, transaction, mountDepth);
+    this.ext_mountComponent(rootId, transaction, mountDepth);
     return (
       createOpenTagMarkupAndPutListeners(transaction) +
       createContentMarkup(transaction) +

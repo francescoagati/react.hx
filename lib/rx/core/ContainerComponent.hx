@@ -3,7 +3,7 @@ package rx.core;
 import rx.core.Component;
 import rx.browser.ReconcileTransaction;
 import rx.utils.FlattenChildren;
-
+using rx.core.ComponentTools;
 enum UpdateTypes {
   InsertMarkup;
   MoveExisting;

@@ -5,6 +5,7 @@ import rx.core.Props;
 import rx.browser.ReconcileTransaction;
 import rx.browser.ui.Environment;
 import rx.core.Owner;
+using rx.core.ComponentTools;
 
 enum Lifecycle {
   Mounted;
@@ -38,7 +39,7 @@ class Component extends Owner {
   var pendingDescriptor: Descriptor;
   var pendingProps: Props;
   var pendingOwner: Owner;
-  var lifecycleState: Lifecycle;
+  public var lifecycleState: Lifecycle;
 
   public var pendingCallbacks: Array<Dynamic>;
   public var mountDepth: Int;
@@ -47,7 +48,7 @@ class Component extends Owner {
 
   public  function isMounted():Bool return lifecycleState == Lifecycle.Mounted;
 
-  public function isOwnedBy(owner:Owner):Bool {
+  public inline function isOwnedBy(owner:Owner):Bool {
     return owner == this.owner;
   }
 
@@ -87,16 +88,17 @@ class Component extends Owner {
 
   }
 
-  public function mountComponent(rootId: String, transaction: ReconcileTransaction, mountDepth: Int):String {
-    var props = this.props;
-    if (props != null && props.get('ref') != null) {
-      var owner = this.owner;
-      Owner.addComponentAsRefTo(this, props.get('ref'), owner);
-    }
-    this.rootNodeId = rootId;
-    this.lifecycleState = Lifecycle.Mounted;
-    this.mountDepth = mountDepth;
-    return null;
+  public  function mountComponent(rootId: String, transaction: ReconcileTransaction, mountDepth: Int):String {
+    return this.ext_mountComponent(rootId, transaction, mountDepth);
+    // var props = this.props;
+    // if (props != null && props.get('ref') != null) {
+    //   var owner = this.owner;
+    //   Owner.addComponentAsRefTo(this, props.get('ref'), owner);
+    // }
+    // this.rootNodeId = rootId;
+    // this.lifecycleState = Lifecycle.Mounted;
+    // this.mountDepth = mountDepth;
+    // return null;
   }
 
   public inline function _mountComponentIntoNode(rootId:String, container:js.html.Element, transaction: ReconcileTransaction, shouldReuseMarkup:Bool) {

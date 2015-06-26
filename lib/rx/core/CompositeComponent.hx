@@ -4,8 +4,8 @@ import rx.core.Component;
 import rx.core.Descriptor;
 import rx.core.Context;
 import rx.core.Owner;
-
 import rx.browser.ReconcileTransaction;
+using rx.core.ComponentTools;
 
 enum CompositeLifecycle {
   Mounting;
@@ -80,7 +80,7 @@ class CompositeComponent<T> extends Component {
 
   public inline override function mountComponent(rootId: String, transaction: ReconcileTransaction, mountDepth:Int):String {
 
-    super.mountComponent(rootId, transaction, mountDepth);
+    this.ext_mountComponent(rootId, transaction, mountDepth);
     compositeLifecycleState = CompositeLifecycle.Mounting;
 
     // context = processContext(context);
