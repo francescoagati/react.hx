@@ -1,5 +1,10 @@
 package rx.browser.ui.dom;
 
+class Helper {
+  public static inline function field(obj:Dynamic,name: String):Dynamic return untyped obj[name];
+}
+
+
 class Check {
   public static inline var MUST_USE_ATTRIBUTE = 0x1;
   public static inline var MUST_USE_PROPERTY = 0x2;
@@ -176,7 +181,7 @@ class Property {
   public static inline var ID_ATTRIBUTE_NAME = 'data-rxid';
 
   public inline static function isStandardName(name: String) {
-    return Reflect.field(Check.Properties, name) != null;
+    return Property.Helper.field(Check.Properties, name) != null;
   }
 
   public inline static function getMutationMethod(name: String): Dynamic {
@@ -184,31 +189,31 @@ class Property {
   }
 
   public inline static function mustUseAttributeName(name: String):Bool {
-    return cast (Reflect.field(Check.Properties,name) & Check.MUST_USE_ATTRIBUTE);
+    return cast (Property.Helper.field(Check.Properties,name) & Check.MUST_USE_ATTRIBUTE);
   }
 
   public inline static function getAttributeName(name: String): String {
-    return Reflect.field(Check.DOMAttributeNames,name);
+    return Property.Helper.field(Check.DOMAttributeNames,name);
   }
 
   public inline static function getPropertyName(name: String): String {
-    return Reflect.field(Check.DOMPropertyNames,name);
+    return Property.Helper.field(Check.DOMPropertyNames,name);
   }
 
   public inline static function hasSideEffects(name: String): Bool {
-    return cast (Reflect.field(Check.Properties,name) & Check.HAS_SIDE_EFFECTS);
-  }
+    return cast (Property.Helper.field(Check.Properties,name) & Check.HAS_SIDE_EFFECTS);
+  } 
 
   public inline static function isCustomAttribute(name: String): Bool {
     return name.indexOf('data-') == 0 || name.indexOf('area-') == 0;
   }
 
   public inline static function hasBooleanValue(name: String): Bool {
-    return cast (Reflect.field(Check.MUST_USE_ATTRIBUTE, name) & Check.HAS_BOOLEAN_VALUE);
+    return cast (Property.Helper.field(Check.MUST_USE_ATTRIBUTE, name) & Check.HAS_BOOLEAN_VALUE);
   }
 
   public inline static function hasPositiveNumbericValue(name: String): Bool {
-    return cast (Reflect.field(Check.MUST_USE_ATTRIBUTE, name) & Check.HAS_POSITIVE_NUMERIC_VALUE);
+    return cast (Property.Helper.field(Check.MUST_USE_ATTRIBUTE, name) & Check.HAS_POSITIVE_NUMERIC_VALUE);
   }
 
   static var defaultValueCache: rx.core.Props = {};
@@ -221,7 +226,7 @@ class Property {
     }
     if (!nodeDefaults.exists(prop)) {
       testElement = js.Browser.document.createElement(nodeName);
-      nodeDefaults.set(prop, Reflect.field(testElement, prop));
+      nodeDefaults.set(prop, Property.Helper.field(testElement, prop));
     }
     return nodeDefaults.get(prop);
   }
